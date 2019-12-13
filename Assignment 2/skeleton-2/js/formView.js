@@ -181,15 +181,6 @@ function saveForm()
     
     let observationExists = false;
     
-    
-    
-    
-
-    
-    
-    
-    
-    
     if(address && roomNumber && seatsUsed>=0 && seatsTotal>0 && Number.isInteger(seatsUsed)===true && Number.isInteger(seatsTotal)===true) 
     {
         
@@ -199,22 +190,13 @@ function saveForm()
             if(seatsUsed <= seatsTotal)
             {
             
-                for(let i=0; i<address.length; i++) 
-                {
-                    if(address[i] === ",") 
-                    {
-                        var commaIndex = i;
-                        break;
-                    }
-                }
+                
 
-                address = address.slice(0,commaIndex)
-
-    //            if(document.getElementsByClassName("mdl-checkbox")[0].classList.value.includes("is-checked") === true) 
-    //            {
-    //                address = true;
-    //            }
-
+//                if(document.getElementsByClassName("mdl-checkbox")[0].classList.value.includes("is-checked") === true) 
+//                {
+//                    address = getAddress();
+//                }
+                
 
                 if(document.getElementsByClassName("mdl-switch")[0].classList.value.includes("is-checked") === true) 
                 {
@@ -234,16 +216,6 @@ function saveForm()
                     heatingCoolingOn = false;
                 }
                 
-                
-                
-//                if(address===)
-                
-                
-                
-                
-                
-                
-                
 
                 let newObservation = new RoomUsage(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal)
                 roomUsageList.addObservation(newObservation);
@@ -252,15 +224,10 @@ function saveForm()
                 localStorage.setItem(key,JSON.stringify(roomUsageList));
 
                 messageRef.innerHTML = "";
-//                messageRef.className = "correctInputs";
                 
-//                alert("Your observation has been saved.");
-                
-                var snackbarContainer = document.querySelector('#toast');
-                var showToastButton = document.querySelector('#saveButton');
-                
-                var data = {message: 'Your observation has been saved.'};
-                snackbarContainer.MaterialSnackbar.showSnackbar(data);
+                let message = "You observation has been saved."
+                let timeout = 2000;
+                displayMessage(message, timeout)
             }
             else
             {
@@ -287,4 +254,136 @@ function clickEnter() {
     
 }
 
+
+//function displayElementsWithClass(className, display)
+//{
+//    var elements = document.getElementsByClassName(className);
+//
+//    for (var i = 0; i < elements.length; i++)
+//    {
+//        if (display)
+//        {
+//            elements[i].style.display = "block";
+//        }
+//        else
+//        {
+//            elements[i].style.display = "none";
+//        }
+//    }
+//}
+//
+//// ======================================================================
+////   GPS sensor code (geolocation)
+//// ======================================================================
+//
+//var latitude = 0, longitude = 0;
+//
+//
+//
+//
+//function errorHandler(error)
+//{
+//    if (error.code == 1)
+//    {
+//        alert("Location access denied by user.");
+//    }
+//    else if (error.code == 2)
+//    {
+//        alert("Location unavailable.");
+//    }
+//    else if (error.code == 3)
+//    {
+//        alert("Location access timed out");
+//    }
+//    else
+//    {
+//        alert("Unknown error getting location.");
+//    }
+//}
+//
+//function showCurrentLocation(position)
+//{
+//    // Demonstrate the current latitude and longitude:
+//    latitude = Number(position.coords.latitude).toFixed(4);
+//    longitude = Number(position.coords.longitude).toFixed(4);
+//
+//    let accuracy = Number(position.coords.accuracy).toFixed(2);
+//
+//    getPosition()
+//}
+//
+//function getPosition() 
+//{
+//    var apikey = "c8b580297e194d9dbac4e5ecf4fe8c5d";
+//
+//    var api_url = 'https://api.opencagedata.com/geocode/v1/json'
+//
+//    var request_url = api_url
+//    + '?'
+//    + 'key=' + apikey
+//    + '&q=' + encodeURIComponent(latitude + ',' + longitude)
+//    + '&pretty=1'
+//    + '&no_annotations=1';
+//
+//    // see full list of required and optional parameters:
+//    // https://opencagedata.com/api#forward
+//
+//    var request = new XMLHttpRequest();
+//    request.open('GET', request_url, true);
+//
+//    request.onload = function() 
+//    {
+//    // see full list of possible response codes:
+//    // https://opencagedata.com/api#codes
+//
+//        if (request.status == 200)
+//        { 
+//            // Success!
+//            var data = JSON.parse(request.responseText);
+//            return data.results[0].formatted;
+//
+//        } 
+//        else if (request.status <= 500)
+//        { 
+//            // We reached our target server, but it returned an error
+//
+//            console.log("unable to geocode! Response code: " + request.status);
+//            var data = JSON.parse(request.responseText);
+//            console.log(data.status.message);
+//        } 
+//        else 
+//        {
+//            console.log("server error");
+//        }
+//    };
+//
+//    request.onerror = function() {
+//    // There was a connection error of some sort
+//    console.log("unable to connect to server");        
+//    };
+//
+//    request.send();  // make the request
+//}
+//
+//checkboxRef.addEventListener("change", function() {
+//    if(this.checked)
+//        {
+//            addressRef.value = showCurrentLocation();
+//            if (navigator.geolocation)
+//{
+//    var positionOptions = {
+//        enableHighAccuracy: true,
+//        timeout: Infinity,
+//        maximumAge: 0
+//    };
+//
+//    displayElementsWithClass("gpsError", false);
+//    navigator.geolocation.watchPosition(showCurrentLocation, errorHandler, positionOptions);
+//}
+//else
+//{
+//    displayElementsWithClass("gpsValue", false);
+//}
+//        }
+//})
 

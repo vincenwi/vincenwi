@@ -2,7 +2,7 @@
 
 class RoomUsage
 {
-    constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal) 
+    constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal, timeChecked) 
     {
         this._roomNumber = roomNumber;
         this._address = address;
@@ -10,7 +10,26 @@ class RoomUsage
         this._heatingCoolingOn = heatingCoolingOn
         this._seatsUsed = seatsUsed;
         this._seatsTotal = seatsTotal;
-//        this._timeChecked = Date();
+        this._timeChecked = new Date(timeChecked);
+    }
+    
+    initialiseFromRoomUsagePDO(roomUsage)
+    {
+//        for(let info in roomUsage)
+//        {
+//            this[info](roomUsage[info]);
+//        }
+//        console.log(roomUsage)
+        
+        this.roomNumber = roomUsage._roomNumber;
+        this.address = roomUsage._address;
+        this.lightsOn = roomUsage._lightsOn;
+        this.heatingCoolingOn = roomUsage._heatingCoolingOn;
+        this.seatsUsed = roomUsage._seatsUsed;
+        this.seatsTotal = roomUsage._seatsTotal;
+        this.timeChecked = roomUsage._timeChecked;
+        
+        
     }
     
     get roomNumber() 
@@ -18,176 +37,223 @@ class RoomUsage
         return this._roomNumber
     }
     
-//    set roomNumber(newRoomNumber) 
-//    {
-//        this._roomNumber = newRoomNumber;
-//    }
+    set roomNumber(newRoomNumber) 
+    {
+        this._roomNumber = newRoomNumber;
+    }
     
     get address() 
     {
-        return this.address;
+        return this._address;
     }
     
-//    set address(newAddress) 
-//    {
-//        this.address = newAddress;
-//    }
+    set address(newAddress) 
+    {
+        
+        for(let i=0; i<newAddress.length; i++) 
+        {
+            if(newAddress[i] === ",") 
+            {
+                var commaIndex = i;
+                break;
+            }
+        }
+
+                
+        this._address = newAddress.slice(0,commaIndex);
+    }
     
     get lightsOn() 
     {
         return this._lightsOn;
     }
     
-//    set lightsOn(newLightsOn) 
-//    {
-//        this._lightsOn = newLightsOn;
-//    }
+    set lightsOn(newLightsOn) 
+    {
+        this._lightsOn = newLightsOn;
+    }
     
     get heatingCoolingOn() 
     {
         return this._heatingCoolingOn;
     }
     
-//    set heatingCoolingOn(newHeatingCoolingOn) 
-//    {
-//        this._roomNumber = newRoomNumber;
-//    }
+    set heatingCoolingOn(newHeatingCoolingOn) 
+    {
+        this._roomNumber = newHeatingCoolingOn;
+    }
     
     get seatsUsed() 
     {
         return this._seatsUsed;
     }
     
-//    set seatsUsed(newSeatsUsed) 
-//    {
-//        this._roomNumber = newRoomNumber;
-//    }
+    set seatsUsed(newSeatsUsed) 
+    {
+        this._roomNumber = newSeatsUsed;
+    }
     
     get seatsTotal() 
     {
         return this._seatsTotal;
     }
     
-//    set seatsTotal(newSeatsTotal) 
-//    {
-//        this._roomNumber = newRoomNumber;
-//    }
+    set seatsTotal(newSeatsTotal) 
+    {
+        this._roomNumber = newSeatsTotal;
+    }
     
     get timeChecked() 
     {
         return this._timeChecked;
     }
     
+    set timeChecked(newTimeChecked)
+    {
+        this._timeChecked = new Date(newTimeChecked);
+    }
+    
     toString() 
     {
         return 
     }
-    
 }
 
 class RoomUsageList 
 {
     constructor() 
     {
-        this._list = [];
+        this._roomList = [];
         this._numberOfObservations = 0;
+        this.updateCounter();
     }
     
     addObservation(observation) 
     {
-//        if(this.checkExistence(observation) === false)
-//        {
-        this._list.push(observation);
-        this._numberOfObservations = this._list.length;
-//        }
-//        else
-//        {
-            // display error: "observation already exists"
-//        }
+        if(this.checkExistence(observation) === false)
+        {
+            this._roomList.push(observation);
+            this.updateCounter()
+        }
+        else
+        {
+             console.log("observation already exists");
+        }
+    }
+    
+    updateCounter()
+    {
+        this._numberOfObservations = this._roomList.length;
     }
     
     removeObservation(index)
     {
-        this._list.splice(index,1);
-        this._numberOfObservations = this._list.length;
+        this._roomList.splice(index,1);
+        this.updateCounter();
     }
     
     get list() 
     {
-        return this._list;
+        return this._roomList;
     }
     
-    checkExistence(observation)
+    checkExistence(newObservation)
     {
         
         // check over Object.keys for "for...in" section
         
         let observationExists = false;
         
-        for(let i=0; i<Object.keys(observation).length; i++)
+        for(let i=0; i<Object.keys(newObservation).length; i++)
         {
-            for(var info in Object.keys(observation))
+            if(this._roomList[i])
             {
-                console.log(observation.info)
-                if(Object.keys(this._list[i]).info === Object.keys(observation.info))
+                let currentObservation = this._roomList[i];
+                for(var info in newObservation)
                 {
-                    observationExists = true;
-                    "observationExists"
+                    if(info !== "_timeChecked")
+                    {
+                        if(currentObservation[info] === newObservation[info])
+                        {
+                            observationExists = true;
+                        }
+                        else
+                        {
+                            observationExists = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        continue;    
+                    }
                 }
-        
-        
             }
         }
-        console.log(observationExists);
+//        console.log(observationExists);
         
         return observationExists;
     }
+    
+    initialiseFromListPDO(listFromStorage)
+    {
+        for(let i=0; i<listFromStorage._roomList.length; i++)
+        {
+            let roomUsage = new RoomUsage();
+            roomUsage.initialiseFromRoomUsagePDO(listFromStorage._roomList[i]);
+            
+            roomUsageList.addObservation(roomUsage);
+        }
+        
+        this.updateCounter();
+    }    
 }
 
 var key = "ENG1003-RoomUseList";
 var roomUsageList = new RoomUsageList();
-getStoredList();
+retrieveList()
 
 
 
-
-function getStoredList()
+function retrieveList()
 {
     if(localStorage.getItem(key))
     {
-        let dummyList = JSON.parse(localStorage.getItem(key));
-    
-        for(let i=0; i<dummyList._list.length; i++)
+        if(typeof(Storage) !== "undefined")
         {
-            roomUsageList._list.push(dummyList._list[i]);
+            let listFromStorage = JSON.parse(localStorage.getItem(key));
+
+            roomUsageList = new RoomUsageList();
+
+            roomUsageList.initialiseFromListPDO(listFromStorage)
         }
-    
+        else
+        {
+            console.log("Error: localStorage is not supported by current browser.");
+        }
     }
 }
+    
+    
+    
+    
+    
+//    if(localStorage.getItem(key))
+//    {
+//        let dummyList = JSON.parse(localStorage.getItem(key));
+//    
+//        for(let i=0; i<dummyList._roomList.length; i++)
+//        {
+//            let roomUsageTemp = new 
+//            roomUsageList._roomList.push(dummyList._roomList[i]);
+//        }
+//    
+//    }
+//}
 
 function storeList()
 {
     localStorage.setItem(key,JSON.stringify(roomUsageList));
-}
-
-function getDate(Date)
-{
-    let dateString = "2018-01-05T09:58:11.000000";
-
-    let date = new Date(dateString)
-    
-    let day = date.day();
-    let monthIndex = date.monthIndex();
-    let hours = date.getHours();
-    let minutes = date.minutes();
-    let seconds = date.seconds();
-    
-    convertTo12Hours
-}
-
-function convertTo12Hours(hours)
-{
-    hours > 12 ? return hours - 12 : return hours;
 }
 
 function deleteObservationAtIndex(index)
@@ -196,6 +262,62 @@ function deleteObservationAtIndex(index)
     storeList();
     
     document.getElementById("observation" + index).remove()
-    
-    
 }
+
+function amPm(hours)
+{
+   
+}
+
+function getTime(date,type)
+{
+    let hours = date.getHours();
+    let minutes = date.getMinutes().toString();
+    let seconds = date.getUTCSeconds().toString();
+    
+    switch(type)
+    {   
+        case "hours":
+            if(hours>12)
+            {
+                return hours - 12;
+            }
+            else
+            {
+                return hours;
+            }
+                
+        case "minutes":
+            if(minutes === "0")
+            {
+                return minutes += "0";
+            }
+            else
+            {
+                return minutes;
+            }
+            
+        case "seconds":
+            if(seconds === "0")
+            {
+                return seconds += "0";
+            }
+            else
+            {
+                return seconds;
+            }
+            
+        case "ampm":
+            if(hours<=12)
+            {
+                return "am";
+            }
+            else
+            {
+                return "pm";
+            }
+            
+            
+    }
+}
+
