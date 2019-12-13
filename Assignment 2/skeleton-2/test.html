@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style type="text/css">
+            html, body { height: 100%; margin: 0; padding: 0; }
+            #map { height: 100%; }
+        </style>
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet'/>
+    </head>
+    
+    <body>
+        <div id='map'></div>
+        <script>
+            
+            let caulfield = [145.0420733, -37.8770097];
+
+    
+            // This should be your own API key
+            mapboxgl.accessToken = "pk.eyJ1IjoiZ3JvdXAtMTMiLCJhIjoiY2szOWZsbTd0MDAxczNpcW5ubXhpaGw3NiJ9.HhkWfP-85qlnpM8KePkhOA";
+            
+            
+    
+            let map = new mapboxgl.Map(
+                {
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v10',
+                    zoom: 16,
+                    center: caulfield
+                }
+            );
+            
+            // Add geolocate control to the map.
+            map.addControl(
+                new mapboxgl.GeolocateControl(  {
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    trackUserLocation: true
+                })
+            );
+            
+        </script>
+    </body>
+</html>
