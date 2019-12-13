@@ -95,15 +95,15 @@ class RoomUsageList
     
     addObservation(observation) 
     {
-        if(this.checkExistence(observation) === false)
-        {
+//        if(this.checkExistence(observation) === false)
+//        {
         this._list.push(observation);
         this._numberOfObservations = this._list.length;
-        }
-        else
-        {
+//        }
+//        else
+//        {
             // display error: "observation already exists"
-        }
+//        }
     }
     
     removeObservation(index)
@@ -170,18 +170,25 @@ function storeList()
     localStorage.setItem(key,JSON.stringify(roomUsageList));
 }
 
-function convertTo12HourClock(Date)
+function getDate(Date)
 {
+    let dateString = "2018-01-05T09:58:11.000000";
+
+    let date = new Date(dateString)
     
+    let day = date.day();
+    let monthIndex = date.monthIndex();
+    let hours = date.getHours();
+    let minutes = date.minutes();
+    let seconds = date.seconds();
     
-    
-    
-    
-    
-    
-    
+    convertTo12Hours
 }
 
+function convertTo12Hours(hours)
+{
+    hours > 12 ? return hours - 12 : return hours;
+}
 
 function deleteObservationAtIndex(index)
 {   
