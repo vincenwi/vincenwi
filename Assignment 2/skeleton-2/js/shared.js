@@ -144,21 +144,19 @@ class RoomUsageList
         this.updateCounter();
     }
     
-    addObservation(observation) 
+    addObservation(newObservation) 
     {
-//        if(this.checkExistence(observation) === false)
-//        {
+        if(this.checkExistence(newObservation) === false)
+        {
 //        console.log(this._roomList.length)
 //        console.log(observation)
-            this._roomList.push(observation);
-            this.updateCounter()
-        
-        
-//        }
-//        else
-//        {
-//             console.log("observation already exists");
-//        }
+            this._roomList.push(newObservation);
+            this.updateCounter();
+        }
+        else
+        {
+             console.log("observation already exists");
+        }
     }
     
     updateCounter()
@@ -170,6 +168,7 @@ class RoomUsageList
     {
         this._roomList.splice(index,1);
         this.updateCounter();
+        storeList();
     }
     
     get list() 
@@ -184,6 +183,8 @@ class RoomUsageList
         
         let observationExists = false;
         
+        if(this._roomList.length>=1){
+        
         for(let i=0; i<this._roomList.length; i++)
         {
 //            if(this._roomList[i])
@@ -193,6 +194,7 @@ class RoomUsageList
                 {
                     if(info !== "_timeChecked")
                     {
+                        
                         if(currentObservation[info] === newObservation[info])
                         {
                             observationExists = true;
@@ -207,13 +209,18 @@ class RoomUsageList
                     {
                         continue;   // skips _timeChecked 
                     }
+                    
+                    
                 }
+            
+            if(observationExists)
+            {
+                break;
+            }
 //            }
         }
-//        console.log(observationExists);
         
-        
-//        if(observationExists){ console.log("aaaaaa")}
+        }
         return observationExists;
     }
     
@@ -224,40 +231,42 @@ class RoomUsageList
             
             let roomUsage = new RoomUsage();
             
-            
             roomUsage.initialiseFromRoomUsagePDO(listFromStorage._roomList[i]);
-            
-            
             
             this.addObservation(roomUsage);
         }
-        
-        
         
         this.updateCounter();
     } 
     
     sortByDate()
     {
-        let sortable = new Array();
+        let sorted = new Array();
         
-        for(var observation in this._roomList)
+        for(let observation in this._roomList)
         {
-            sortable.push([observation,this._roomList[observation]._timeChecked])
+            sorted.push([observation,this._roomList[observation],this._roomList[observation]._timeChecked])
         }
         
-        sortable.sort(function(a,b){return b[1]-a[1]});
+        sorted.sort(function(a,b){return b[2]-a[2]});
         
-        console.log(sortable)
+        let tempList = new RoomUsageList();
         
-        let tempList = this._roomList;
-        
-        for(var observation in this._roomList)
+        for(let observation in this._roomList)
         {   
-            this._roomList[observation] = tempList[sortable[observation][0]]
+            tempList.addObservation(sorted[observation][1]);
+//            this._roomList[observation] = tempList._roomList[observation]
         }
-        
 
+        this._roomList = tempList._roomList
+
+
+    }
+    
+    clearObservations()
+    {
+        this._roomList = new Array();
+        storeList();
     }
 }
 
@@ -267,7 +276,6 @@ retrieveList();
 
 function retrieveList()
 {
-
     if(localStorage.getItem(key))
     {
         if(typeof(Storage) !== "undefined")
@@ -276,30 +284,28 @@ function retrieveList()
             
 //            console.log(listFromStorage)
 
-            roomUsageList.initialiseFromListPDO(listFromStorage)
+            roomUsageList.initialiseFromListPDO(listFromStorage);
         }
         else
         {
             console.log("Error: localStorage is not supported by current browser.");
         }
     }
-
-//    roomUsageList.sortByDate();
-    storeList()
+    roomUsageList.sortByDate();
+    storeList() 
 
 }
 
 function storeList()
 {
-    localStorage.setItem(key,JSON.stringify(roomUsageList));
+    localStorage.setItem(key, JSON.stringify(roomUsageList));
 }
 
 function deleteObservationAtIndex(index)
 {   
     roomUsageList.removeObservation(index);
-    storeList();
-    
     document.getElementById("observation" + index).remove()
+    
 }
 
 function getTime(time,type)
