@@ -224,6 +224,8 @@ function saveForm()
                 let message = "You observation has been saved."
                 let timeout = 2000;
                 displayMessage(message, timeout)
+                
+                retrieveList()
             }
             else
             {
@@ -243,11 +245,6 @@ function saveForm()
         messageRef.innerHTML = "Incorrect inputs.";
         messageRef.className = "errorMessage";
     }
-}
-
-function clickEnter() {
-    
-    
 }
 
 
@@ -383,3 +380,9 @@ function clickEnter() {
 //        }
 //})
 
+document.querySelector('.mdl-textfield').addEventListener('keypress', function (e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) { // 13 is enter
+      saveForm()
+    }
+});
