@@ -2,7 +2,7 @@
 
 class RoomUsage
 {
-    constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal, timeChecked) 
+    constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal) 
     {
         this._roomNumber = roomNumber;
         this._address = address;
@@ -10,7 +10,7 @@ class RoomUsage
         this._heatingCoolingOn = heatingCoolingOn
         this._seatsUsed = seatsUsed;
         this._seatsTotal = seatsTotal;
-        this._timeChecked = new Date(timeChecked);
+        this._timeChecked = new Date();
     }
     
     initialiseFromRoomUsagePDO(roomUsage)
@@ -20,6 +20,8 @@ class RoomUsage
 //            this[info](roomUsage[info]);
 //        }
 //        console.log(roomUsage)
+        
+        
         
         this.roomNumber = roomUsage._roomNumber;
         this.address = roomUsage._address;
@@ -34,12 +36,20 @@ class RoomUsage
     
     get roomNumber() 
     {
+        
         return this._roomNumber
     }
     
     set roomNumber(newRoomNumber) 
     {
-        this._roomNumber = newRoomNumber;
+        if(newRoomNumber)
+        {
+            this._roomNumber = newRoomNumber;
+        }
+        else
+        {
+//            displayError();
+        }
     }
     
     get address() 
@@ -49,18 +59,23 @@ class RoomUsage
     
     set address(newAddress) 
     {
-        
-        for(let i=0; i<newAddress.length; i++) 
+        if(newAddress)
         {
-            if(newAddress[i] === ",") 
+            for(let i=0; i<newAddress.length; i++) 
             {
-                var commaIndex = i;
-                break;
+                if(newAddress[i] === ",") 
+                {
+                    var commaIndex = i;
+                    break;
+                }
             }
-        }
-
                 
         this._address = newAddress.slice(0,commaIndex);
+        }
+        else
+        {
+//            displayError();
+        }
     }
     
     get lightsOn() 
@@ -80,7 +95,8 @@ class RoomUsage
     
     set heatingCoolingOn(newHeatingCoolingOn) 
     {
-        this._roomNumber = newHeatingCoolingOn;
+        this._heatingCoolingOn = newHeatingCoolingOn;
+
     }
     
     get seatsUsed() 
@@ -90,7 +106,7 @@ class RoomUsage
     
     set seatsUsed(newSeatsUsed) 
     {
-        this._roomNumber = newSeatsUsed;
+        this._seatsUsed = newSeatsUsed;
     }
     
     get seatsTotal() 
@@ -100,7 +116,7 @@ class RoomUsage
     
     set seatsTotal(newSeatsTotal) 
     {
-        this._roomNumber = newSeatsTotal;
+        this._seatsTotal = newSeatsTotal;
     }
     
     get timeChecked() 
@@ -130,15 +146,19 @@ class RoomUsageList
     
     addObservation(observation) 
     {
-        if(this.checkExistence(observation) === false)
-        {
+//        if(this.checkExistence(observation) === false)
+//        {
+//        console.log(this._roomList.length)
+//        console.log(observation)
             this._roomList.push(observation);
             this.updateCounter()
-        }
-        else
-        {
-             console.log("observation already exists");
-        }
+        
+        
+//        }
+//        else
+//        {
+//             console.log("observation already exists");
+//        }
     }
     
     updateCounter()
@@ -164,10 +184,10 @@ class RoomUsageList
         
         let observationExists = false;
         
-        for(let i=0; i<Object.keys(newObservation).length; i++)
+        for(let i=0; i<this._roomList.length; i++)
         {
-            if(this._roomList[i])
-            {
+//            if(this._roomList[i])
+//            {
                 let currentObservation = this._roomList[i];
                 for(var info in newObservation)
                 {
@@ -185,13 +205,15 @@ class RoomUsageList
                     }
                     else
                     {
-                        continue;    
+                        continue;   // skips _timeChecked 
                     }
                 }
-            }
+//            }
         }
 //        console.log(observationExists);
         
+        
+//        if(observationExists){ console.log("aaaaaa")}
         return observationExists;
     }
     
@@ -199,31 +221,60 @@ class RoomUsageList
     {
         for(let i=0; i<listFromStorage._roomList.length; i++)
         {
+            
             let roomUsage = new RoomUsage();
+            
+            
             roomUsage.initialiseFromRoomUsagePDO(listFromStorage._roomList[i]);
             
-            roomUsageList.addObservation(roomUsage);
+            
+            
+            this.addObservation(roomUsage);
         }
         
+        
+        
         this.updateCounter();
-    }    
+    } 
+    
+    sortByDate()
+    {
+        let sortable = new Array();
+        
+        for(var observation in this._roomList)
+        {
+            sortable.push([observation,this._roomList[observation]._timeChecked])
+        }
+        
+        sortable.sort(function(a,b){return b[1]-a[1]});
+        
+        console.log(sortable)
+        
+        let tempList = this._roomList;
+        
+        for(var observation in this._roomList)
+        {   
+            this._roomList[observation] = tempList[sortable[observation][0]]
+        }
+        
+
+    }
 }
 
 var key = "ENG1003-RoomUseList";
 var roomUsageList = new RoomUsageList();
-retrieveList()
-
-
+retrieveList();
 
 function retrieveList()
 {
+
     if(localStorage.getItem(key))
     {
         if(typeof(Storage) !== "undefined")
         {
             let listFromStorage = JSON.parse(localStorage.getItem(key));
-
-            roomUsageList = new RoomUsageList();
+            
+//            console.log(listFromStorage)
 
             roomUsageList.initialiseFromListPDO(listFromStorage)
         }
@@ -232,24 +283,11 @@ function retrieveList()
             console.log("Error: localStorage is not supported by current browser.");
         }
     }
+
+//    roomUsageList.sortByDate();
+    storeList()
+
 }
-    
-    
-    
-    
-    
-//    if(localStorage.getItem(key))
-//    {
-//        let dummyList = JSON.parse(localStorage.getItem(key));
-//    
-//        for(let i=0; i<dummyList._roomList.length; i++)
-//        {
-//            let roomUsageTemp = new 
-//            roomUsageList._roomList.push(dummyList._roomList[i]);
-//        }
-//    
-//    }
-//}
 
 function storeList()
 {
@@ -264,33 +302,46 @@ function deleteObservationAtIndex(index)
     document.getElementById("observation" + index).remove()
 }
 
-function amPm(hours)
+function getTime(time,type)
 {
-   
-}
-
-function getTime(date,type)
-{
-    let hours = date.getHours();
-    let minutes = date.getMinutes().toString();
-    let seconds = date.getUTCSeconds().toString();
+    let month = time.getMonth();
+    let date = time.getDate();
+    let hours = time.getHours();
+    let minutes = time.getMinutes().toString();
+    let seconds = time.getSeconds().toString();
+    
+    let monthNames = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
     
     switch(type)
     {   
+        case "month":
+            return monthNames[month];
+            
+        case "date":
+            return date;
+            
         case "hours":
             if(hours>12)
             {
-                return hours - 12;
+                hours -= 12;
+            }
+            
+            hours = hours.toString();
+            
+            if(hours.length === 1)
+            {
+                return "0" + hours;
             }
             else
             {
                 return hours;
             }
+           
                 
         case "minutes":
-            if(minutes === "0")
+            if(minutes.length === 1)
             {
-                return minutes += "0";
+                return "0" + minutes;
             }
             else
             {
@@ -298,9 +349,9 @@ function getTime(date,type)
             }
             
         case "seconds":
-            if(seconds === "0")
+            if(seconds.length === 1)
             {
-                return seconds += "0";
+                return "0" + seconds;
             }
             else
             {
@@ -320,4 +371,19 @@ function getTime(date,type)
             
     }
 }
+
+// displays incorrect inputs because each roomUsage from JSON file is passed through the setters which has the if statements to check the validity of the values being inputted. 
+//Posible fix: delete invalid observations from the localstorage
+
+
+
+function displayError()
+{
+    
+    let messageRef = document.getElementById("message");
+    messageRef.innerHTML = "Incorrect inputs.";
+    messageRef.className = "errorMessage";
+}
+
+
 

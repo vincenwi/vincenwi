@@ -179,8 +179,6 @@ function saveForm()
     let seatsTotal = Number(seatsTotalRef.value);
     let lightsOn,heatingCoolingOn;
     
-    let observationExists = false;
-    
     if(address && roomNumber && seatsUsed>=0 && seatsTotal>0 && Number.isInteger(seatsUsed)===true && Number.isInteger(seatsTotal)===true) 
     {
         
@@ -189,8 +187,6 @@ function saveForm()
             
             if(seatsUsed <= seatsTotal)
             {
-            
-                
 
 //                if(document.getElementsByClassName("mdl-checkbox")[0].classList.value.includes("is-checked") === true) 
 //                {

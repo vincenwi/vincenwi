@@ -1,15 +1,25 @@
 "use strict";
 
-let body = document.getElementsByClassName("mdl-grid")[0];
+let body = document.getElementById("content");
 
 for(let index=0; index<roomUsageList._roomList.length; index++)
 {
     let observation = roomUsageList._roomList[index];
     
+//    let newTile = `<div class='mdl-cell mdl-cell--4-col' id='observation${index}'></div>`
+//    
+//    body += newTile
+    
+    
+    
     let div = document.createElement("div");
     div.setAttribute("class","mdl-cell mdl-cell--4-col");
     div.setAttribute("id","observation" + index);
     body.appendChild(div);
+    
+    
+    
+//    let div = document.getElementById("observation" + index)
     
     let table = document.createElement("table");
     table.setAttribute("class","observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp");
@@ -72,8 +82,6 @@ for(let index=0; index<roomUsageList._roomList.length; index++)
     
     let time = observation._timeChecked;
     
-    let ampm = amPm(time);
-    
     document.getElementById("observationData" + index).innerHTML = "Time: " 
         + getTime(time,"hours") 
         + ":" 
@@ -96,10 +104,7 @@ for(let index=0; index<roomUsageList._roomList.length; index++)
     button.appendChild(i);
     document.getElementById("deleteButton" + index).innerHTML = "delete";
     
-    document.getElementById("address" + index).innerHTML = observation._address + "<br/>" + observation._roomNumber;
-    
-    
-    
-    
-    
+    document.getElementById("date" + index).innerHTML = `${getTime(time,"date")} ${getTime(time,"month")}`;
+
+    document.getElementById("address" + index).innerHTML = observation._address + "<br/>Rm " + observation._roomNumber;
 }
