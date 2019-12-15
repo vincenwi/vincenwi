@@ -380,9 +380,8 @@ function saveForm()
 //        }
 //})
 
-document.querySelector('.mdl-textfield').addEventListener('keypress', function (e) {
-    var key = e.which || e.keyCode;
-    if (key === 13) { // 13 is enter
-      saveForm()
+document.getElementById("observationForm").onkeypress=function(){
+    if(window.event.keyCode=='13'){
+        saveForm();
     }
-});
+}

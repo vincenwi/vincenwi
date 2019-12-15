@@ -183,43 +183,36 @@ class RoomUsageList
         
         let observationExists = false;
         
-        if(this._roomList.length>=1){
-        
-        for(let i=0; i<this._roomList.length; i++)
+        for(let i=0; i<this._roomList.length && this._roomList.length>=1; i++)
         {
-//            if(this._roomList[i])
-//            {
-                let currentObservation = this._roomList[i];
-                for(var info in newObservation)
+            let currentObservation = this._roomList[i];
+            for(var info in newObservation)
+            {
+                if(info !== "_timeChecked")
                 {
-                    if(info !== "_timeChecked")
+
+                    if(currentObservation[info] === newObservation[info])
                     {
-                        
-                        if(currentObservation[info] === newObservation[info])
-                        {
-                            observationExists = true;
-                        }
-                        else
-                        {
-                            observationExists = false;
-                            break;
-                        }
+                        observationExists = true;
                     }
                     else
                     {
-                        continue;   // skips _timeChecked 
+                        observationExists = false;
+                        break;
                     }
-                    
-                    
                 }
-            
-            if(observationExists)
+                else
+                {
+                    continue;   // skips _timeChecked 
+                }
+
+
+            }
+
+            if(observationExists) // if observation already exists in the list, it just stops checking
             {
                 break;
             }
-//            }
-        }
-        
         }
         return observationExists;
     }
@@ -281,8 +274,6 @@ function retrieveList()
         if(typeof(Storage) !== "undefined")
         {
             let listFromStorage = JSON.parse(localStorage.getItem(key));
-            
-//            console.log(listFromStorage)
 
             roomUsageList.initialiseFromListPDO(listFromStorage);
         }
