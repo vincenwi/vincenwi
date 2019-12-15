@@ -200,6 +200,8 @@ class RoomUsageList
                         observationExists = false;
                         break;
                     }
+                    
+                    
                 }
                 else
                 {
