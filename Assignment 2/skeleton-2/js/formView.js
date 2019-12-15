@@ -30,15 +30,15 @@ var seatsTotalRef = document.getElementById("seatsTotal");
 
 var autoAddress, lightsOn, heatingCoolingOn
 
+var longitude,latitude;
+
 var checkboxRef = document.getElementsByClassName("mdl-checkbox")[0];
 var lightsSwitchRef = document.getElementsByClassName("mdl-switch")[0];
 var heatingCoolingSwitchRef = document.getElementsByClassName("mdl-switch")[1];
 
 var key = "ENG1003-RoomUseList";
 
-let messageRef = document.getElementById("message");
-
-
+let errorMessagesRef = document.getElementById("errorMessages");
 
 let tempList = JSON.parse(localStorage.getItem(key));
 
@@ -105,7 +105,7 @@ function clearForm()
         if (document.getElementById(textFieldIDs[i]).value !== "")
         {   
             document.getElementById(textFieldIDs[i]).value = "";
-            document.getElementsByClassName("mdl-textfield")[i].MaterialTextfield.updateClasses_();
+            checkTextfieldClasses();
         }
         
         if(i in document.getElementsByClassName("mdl-switch") === true)
@@ -116,7 +116,7 @@ function clearForm()
     
     document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
     
-    messageRef.innerHTML = "";
+    errorMessagesRef.innerHTML = "";
     
     var snackbarContainer = document.querySelector('#toast');
     var showSnackbarButton = document.querySelector('#clearButton');
@@ -131,8 +131,7 @@ function clearForm()
         
         for(let i=0; i<textFieldIDs.length; i++)
         {
-            document.getElementsByClassName("mdl-textfield")[i].MaterialTextfield.updateClasses_();
-//            document.getElementsByClassName("mdl-textfield")[i].MaterialTextfield.checkValidity();
+            checkTextfieldClasses();
         }
         
         if(autoAddress === true)
@@ -166,6 +165,8 @@ function clearForm()
 
 function saveForm()
 {   
+//    retrieveList();
+    
     let addressRef = document.getElementById("address");
     let roomNumberRef = document.getElementById("roomNumber");
     let lightsRef = document.getElementById("lights");
@@ -181,19 +182,10 @@ function saveForm()
     
     if(address && roomNumber && seatsUsed>=0 && seatsTotal>0 && Number.isInteger(seatsUsed)===true && Number.isInteger(seatsTotal)===true) 
     {
-        
         if (!document.querySelector(".is-invalid")) 
         {
-            
             if(seatsUsed <= seatsTotal)
             {
-
-//                if(document.getElementsByClassName("mdl-checkbox")[0].classList.value.includes("is-checked") === true) 
-//                {
-//                    address = getAddress();
-//                }
-                
-
                 if(document.getElementsByClassName("mdl-switch")[0].classList.value.includes("is-checked") === true) 
                 {
                     lightsOn = true;
@@ -219,169 +211,198 @@ function saveForm()
                 // find out if RoomUsageList class should be by address or something else
                 localStorage.setItem(key,JSON.stringify(roomUsageList));
 
-                messageRef.innerHTML = "";
+                errorMessagesRef.innerHTML = "";
                 
-                let message = "You observation has been saved."
-                let timeout = 2000;
-                displayMessage(message, timeout)
-                
-                retrieveList()
+//                let message = "You observation has been saved."
+//                let timeout = 2000;
+//                displayMessage(message, timeout);
+//                
+                storeList()
             }
             else
             {
-                messageRef.innerHTML = "Number of seats in use is invalid.";
-                messageRef.className = "errorMessage";
+                errorMessagesRef.innerHTML = "Number of seats in use is invalid.";
             }
         }
         else
         {
-            messageRef.innerHTML = "Incorrect inputs.";
-            messageRef.className = "errorMessage";
+            errorMessagesRef.innerHTML = "Incorrect inputs.";
         }
         
     } 
     else 
     {
-        messageRef.innerHTML = "Incorrect inputs.";
-        messageRef.className = "errorMessage";
+        errorMessagesRef.innerHTML = "Incorrect inputs.";
     }
 }
 
-
-//function displayElementsWithClass(className, display)
-//{
-//    var elements = document.getElementsByClassName(className);
-//
-//    for (var i = 0; i < elements.length; i++)
-//    {
-//        if (display)
-//        {
-//            elements[i].style.display = "block";
-//        }
-//        else
-//        {
-//            elements[i].style.display = "none";
-//        }
-//    }
-//}
-//
-//// ======================================================================
-////   GPS sensor code (geolocation)
-//// ======================================================================
-//
-//var latitude = 0, longitude = 0;
-//
-//
-//
-//
-//function errorHandler(error)
-//{
-//    if (error.code == 1)
-//    {
-//        alert("Location access denied by user.");
-//    }
-//    else if (error.code == 2)
-//    {
-//        alert("Location unavailable.");
-//    }
-//    else if (error.code == 3)
-//    {
-//        alert("Location access timed out");
-//    }
-//    else
-//    {
-//        alert("Unknown error getting location.");
-//    }
-//}
-//
-//function showCurrentLocation(position)
-//{
-//    // Demonstrate the current latitude and longitude:
-//    latitude = Number(position.coords.latitude).toFixed(4);
-//    longitude = Number(position.coords.longitude).toFixed(4);
-//
-//    let accuracy = Number(position.coords.accuracy).toFixed(2);
-//
-//    getPosition()
-//}
-//
-//function getPosition() 
-//{
-//    var apikey = "c8b580297e194d9dbac4e5ecf4fe8c5d";
-//
-//    var api_url = 'https://api.opencagedata.com/geocode/v1/json'
-//
-//    var request_url = api_url
-//    + '?'
-//    + 'key=' + apikey
-//    + '&q=' + encodeURIComponent(latitude + ',' + longitude)
-//    + '&pretty=1'
-//    + '&no_annotations=1';
-//
-//    // see full list of required and optional parameters:
-//    // https://opencagedata.com/api#forward
-//
-//    var request = new XMLHttpRequest();
-//    request.open('GET', request_url, true);
-//
-//    request.onload = function() 
-//    {
-//    // see full list of possible response codes:
-//    // https://opencagedata.com/api#codes
-//
-//        if (request.status == 200)
-//        { 
-//            // Success!
-//            var data = JSON.parse(request.responseText);
-//            return data.results[0].formatted;
-//
-//        } 
-//        else if (request.status <= 500)
-//        { 
-//            // We reached our target server, but it returned an error
-//
-//            console.log("unable to geocode! Response code: " + request.status);
-//            var data = JSON.parse(request.responseText);
-//            console.log(data.status.message);
-//        } 
-//        else 
-//        {
-//            console.log("server error");
-//        }
-//    };
-//
-//    request.onerror = function() {
-//    // There was a connection error of some sort
-//    console.log("unable to connect to server");        
-//    };
-//
-//    request.send();  // make the request
-//}
-//
-//checkboxRef.addEventListener("change", function() {
-//    if(this.checked)
-//        {
-//            addressRef.value = showCurrentLocation();
-//            if (navigator.geolocation)
-//{
-//    var positionOptions = {
-//        enableHighAccuracy: true,
-//        timeout: Infinity,
-//        maximumAge: 0
-//    };
-//
-//    displayElementsWithClass("gpsError", false);
-//    navigator.geolocation.watchPosition(showCurrentLocation, errorHandler, positionOptions);
-//}
-//else
-//{
-//    displayElementsWithClass("gpsValue", false);
-//}
-//        }
-//})
-
-document.getElementById("observationForm").onkeypress=function(){
+document.getElementById("observationForm").onkeypress= function()
+{
     if(window.event.keyCode=='13'){
         saveForm();
+    }
+}
+
+              
+            
+function getPosition()
+{
+    function displayElementsWithClass(className, display)
+    {
+        var elements = document.getElementsByClassName(className);
+
+        for (var i = 0; i < elements.length; i++)
+        {
+            if (display)
+            {
+                elements[i].style.display = "block";
+            }
+            else
+            {
+                elements[i].style.display = "none";
+            }
+        }
+    }
+
+    // ======================================================================
+    //   GPS sensor code (geolocation)
+    // ======================================================================
+
+    if (navigator.geolocation)
+    {
+        let positionOptions = {
+            enableHighAccuracy: true,
+            timeout: Infinity,
+            maximumAge: 0
+        };
+
+        displayElementsWithClass("gpsError", false);
+        navigator.geolocation.watchPosition(showCurrentLocation, errorHandler, positionOptions);
+    }
+    else
+    {
+        displayElementsWithClass("gpsValue", false);
+    }
+
+    function errorHandler(error)
+    {
+        if (error.code == 1)
+        {
+           alert("Location access denied by user.");
+        }
+        else if (error.code == 2)
+        {
+           alert("Location unavailable.");
+        }
+        else if (error.code == 3)
+        {
+           alert("Location access timed out");
+        }
+        else
+        {
+           alert("Unknown error getting location.");
+        }
+    }
+
+    function showCurrentLocation(position)
+    {
+        // Demonstrate the current latitude and longitude:
+//        latitude = Number(position.coords.latitude);
+//        longitude = Number(position.coords.longitude);
+        latitude = 0; longitude = 0;
+
+        let accuracy = Number(position.coords.accuracy).toFixed(2);
+        
+        getAddress();
+    }
+}
+
+function getAddress()
+{            
+    var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
+
+    var api_url = 'https://api.opencagedata.com/geocode/v1/json'
+
+    var request_url = api_url
+    + '?'
+    + 'key=' + apikey
+    + '&q=' + encodeURIComponent(latitude + ',' + longitude)
+    + '&pretty=1'
+    + '&no_annotations=1';
+
+    // see full list of required and optional parameters:
+    // https://opencagedata.com/api#forward
+
+    var request = new XMLHttpRequest();
+    request.open('GET', request_url, true);
+
+    request.onload = function() 
+    {
+        // see full list of possible response codes:
+        // https://opencagedata.com/api#codes
+
+        if (request.status == 200)
+        { 
+            // Success!
+            var data = JSON.parse(request.responseText);
+
+            let road = data.results[0].components.road;
+            let footway = data.results[0].components.footway;
+
+            if(road)
+            {
+                addressRef.value = road;
+                checkTextfieldClasses();
+            }
+            else if(footway)
+            {
+                addressRef.value = footway;
+                checkTextfieldClasses();
+            }
+            else
+            {
+                displayMessage("Unable to determine location, please enter your address manually.")
+                document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
+            }
+        } 
+        else if (request.status <= 500)
+        { 
+            // We reached our target server, but it returned an error
+
+            console.log("unable to geocode! Response code: " + request.status);
+            var data = JSON.parse(request.responseText);
+
+            console.log(data.status.message);
+        } 
+        else 
+        {
+            console.log("server error");
+        }
+    };
+
+    request.onerror = function() 
+    {
+        // There was a connection error of some sort
+        console.log("unable to connect to server");        
+    };
+
+    request.send();  // make the request
+}
+            
+            
+            
+document.getElementById("useAddress").addEventListener("change",function(){
+    
+    if(this.checked)
+    {
+        getPosition();
+    }
+})
+
+function checkTextfieldClasses()
+{
+    for(let i=0; i<textFieldIDs.length; i++)
+    {
+        document.getElementsByClassName("mdl-textfield")[i].MaterialTextfield.updateClasses_();
     }
 }

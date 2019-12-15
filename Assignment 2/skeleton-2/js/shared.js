@@ -59,23 +59,7 @@ class RoomUsage
     
     set address(newAddress) 
     {
-        if(newAddress)
-        {
-            for(let i=0; i<newAddress.length; i++) 
-            {
-                if(newAddress[i] === ",") 
-                {
-                    var commaIndex = i;
-                    break;
-                }
-            }
-                
-        this._address = newAddress.slice(0,commaIndex);
-        }
-        else
-        {
-//            displayError();
-        }
+        this._address = getRoad(newAddress);
     }
     
     get lightsOn() 
@@ -96,7 +80,6 @@ class RoomUsage
     set heatingCoolingOn(newHeatingCoolingOn) 
     {
         this._heatingCoolingOn = newHeatingCoolingOn;
-
     }
     
     get seatsUsed() 
@@ -145,17 +128,30 @@ class RoomUsageList
     }
     
     addObservation(newObservation) 
-    {
+    {   
         if(this.checkExistence(newObservation) === false)
         {
 //        console.log(this._roomList.length)
 //        console.log(observation)
             this._roomList.push(newObservation);
             this.updateCounter();
+            
+            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
+            {
+                let errorMessagesRef = document.getElementById("errorMessages");
+                errorMessagesRef.innerHTML = "";
+                
+                let message = "You observation has been saved."
+                let timeout = 2000;
+                displayMessage(message, timeout)
+            }
         }
         else
         {
-             console.log("observation already exists");
+            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
+            {
+                displayMessage("Observation already exists.");
+            }
         }
     }
     
@@ -200,15 +196,11 @@ class RoomUsageList
                         observationExists = false;
                         break;
                     }
-                    
-                    
                 }
                 else
                 {
                     continue;   // skips _timeChecked 
                 }
-
-
             }
 
             if(observationExists) // if observation already exists in the list, it just stops checking
@@ -250,7 +242,6 @@ class RoomUsageList
         for(let observation in this._roomList)
         {   
             tempList.addObservation(sorted[observation][1]);
-//            this._roomList[observation] = tempList._roomList[observation]
         }
 
         this._roomList = tempList._roomList
@@ -261,6 +252,7 @@ class RoomUsageList
     clearObservations()
     {
         this._roomList = new Array();
+        this.updateCounter();
         storeList();
     }
 }
@@ -285,7 +277,7 @@ function retrieveList()
         }
     }
     roomUsageList.sortByDate();
-    storeList() 
+//    storeList() 
 
 }
 
@@ -378,11 +370,22 @@ function getTime(time,type)
 
 function displayError()
 {
-    
-    let messageRef = document.getElementById("message");
-    messageRef.innerHTML = "Incorrect inputs.";
-    messageRef.className = "errorMessage";
+    errorMessagesRef.innerHTML = "Incorrect inputs.";
 }
 
+
+function getRoad(address)
+{
+    for(let i=0; i<address.length; i++) 
+        {
+            if(address[i] === ",") 
+            {
+                var commaIndex = i;
+                break;
+            }
+        }
+
+    return address.slice(0,commaIndex);
+}
 
 

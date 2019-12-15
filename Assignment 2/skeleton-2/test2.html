@@ -6,8 +6,10 @@
         <title>Room Usage</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<!--
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+-->
         <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
         <link rel="stylesheet" href="css/style.css" />
         <style type="text/css">
@@ -20,16 +22,41 @@
     </head>
     
     <body>
-<!--        <div id='map'></div>-->
         
-        <button id = "find-me">Show my location</button><br/>
-<p id = "status"></p>
-<a id = "map-link" target="_blank"></a>
+<!--
+        <main class="mdl-layout__content">
+            <div class="page-content">
+                <div class="mdl-grid">
+                    <div class="mdl-cell mdl-cell--4-col">
+                        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                            <tbody id="observationForm">
+                                 <tr>
+                                     <td>
+                                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="useAddress">
+                                            <input type="checkbox" id="useAddress" class="mdl-checkbox__input">
+                                            <span class="mdl-checkbox__label">Automatically determine my address</span>
+                                        </label>
+                                     </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+-->
         
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-2">
+  <input type="checkbox" id="checkbox-2" class="mdl-checkbox__input">
+  <span class="mdl-checkbox__label">Checkbox</span>
+</label>
         
         <script>
             
+              var latitude = -37.9145783, longitude = 145.1305687
             
+function getPosition()
+{
             function displayElementsWithClass(className, display)
     {
         var elements = document.getElementsByClassName(className);
@@ -51,9 +78,6 @@
     //   GPS sensor code (geolocation)
     // ======================================================================
 
-    var latitude = 0, longitude = 0;
-            
-            
     if (navigator.geolocation)
     {
         positionOptions = {
@@ -93,22 +117,20 @@
     function showCurrentLocation(position)
     {
         // Demonstrate the current latitude and longitude:
-        latitude = Number(position.coords.latitude).toFixed(4);
-        longitude = Number(position.coords.longitude).toFixed(4);
-
-        let accuracy = Number(position.coords.accuracy).toFixed(2);
+        latitude = Number(position.coords.latitude);
+        longitude = Number(position.coords.longitude);
         
-        getPosition()
-    }
-            
-            
-            
-            
-function getPosition() {
-    
+        console.log(`Latitude: ${latitude}  Longitude: ${longitude}`)
 
-            
-            var apikey = "c8b580297e194d9dbac4e5ecf4fe8c5d";
+        accuracy = Number(position.coords.accuracy).toFixed(2);
+        
+        getAddress()
+    }
+}
+
+function getAddress()
+{            
+var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
 
   var api_url = 'https://api.opencagedata.com/geocode/v1/json'
 
@@ -121,6 +143,8 @@ function getPosition() {
 
   // see full list of required and optional parameters:
   // https://opencagedata.com/api#forward
+    
+    console.log("Done")
 
   var request = new XMLHttpRequest();
   request.open('GET', request_url, true);
@@ -132,7 +156,7 @@ function getPosition() {
     if (request.status == 200){ 
       // Success!
       var data = JSON.parse(request.responseText);
-      alert(data.results[0].formatted);
+      console.log(data.results[0].formatted);
 
     } else if (request.status <= 500){ 
       // We reached our target server, but it returned an error
@@ -151,16 +175,40 @@ function getPosition() {
   };
 
   request.send();  // make the request
+}
+            
+            
+            
+document.getElementById("checkbox-2").addEventListener("change",function(){
+    
+    if(this.checked)
+    {
+        getPosition()
     }
+    
+    
+    
+    
+    
+    
+})
+            
+            
+            
+            
+            
+            
+            
+            
+          
+            
+            
+            
+            
+            
+            
 
             
         </script>
     </body>
 </html>
-
-
-
-
-<script>
-
-</script>
