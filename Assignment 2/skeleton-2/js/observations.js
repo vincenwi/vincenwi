@@ -119,7 +119,7 @@ function searchFor()
 {
     document.getElementById("content").innerHTML = "";
     
-    let input = document.getElementById("searchField").value;
+    let input = document.getElementById("searchField").value.toLowerCase();
     
     let searchList = new RoomUsageList();
     
@@ -127,7 +127,7 @@ function searchFor()
     
     for(let observation in roomUsageList._roomList)
     {
-        let index = roomUsageList._roomList[observation].toString().indexOf(input);
+        let index = roomUsageList._roomList[observation].toString().toLowerCase().indexOf(input);
         
         if(index !== -1)
         {

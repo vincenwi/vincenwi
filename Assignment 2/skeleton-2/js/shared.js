@@ -129,6 +129,8 @@ class RoomUsageList
     
     addObservation(newObservation) 
     {   
+        let errorMessagesRef = document.getElementById("errorMessages");
+        
         if(this.checkExistence(newObservation) === false)
         {
 //        console.log(this._roomList.length)
@@ -138,34 +140,27 @@ class RoomUsageList
             
             if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
             {
-                let errorMessagesRef = document.getElementById("errorMessages");
                 errorMessagesRef.innerHTML = "";
-                
-                let message = "You observation has been saved."
-                let timeout = 2000;
-                displayMessage(message, timeout)
+                displayMessage("You observation has been saved.")
             }
         }
         else
         {
             if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
             {
-                displayMessage("Observation already exists.");
+                
+//                displayMessage("Observation already exists.");
+                errorMessagesRef.innerHTML = "Observaiton already exists.";
             }
         }
     }
     
-    updateCounter()
-    {
-        this._numberOfObservations = this._roomList.length;
-    }
+    
     
     removeObservation(index)
     {
-//        this._roomList.splice(index,1);
         this._roomList[index] = ""
         this.updateCounter();
-//        storeList();
     }
     
     get list() 
@@ -255,6 +250,19 @@ class RoomUsageList
         this._roomList = new Array();
         this.updateCounter();
 //        storeList();
+    }
+    
+    aggregateBy()
+    {
+        let bucket
+        
+        
+        return bucket;
+    }
+    
+    updateCounter()
+    {
+        this._numberOfObservations = this._roomList.length;
     }
 }
 

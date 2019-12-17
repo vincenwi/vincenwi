@@ -195,29 +195,22 @@ function saveForm()
                 // find out if RoomUsageList class should be by address or something else
                 localStorage.setItem(key,JSON.stringify(roomUsageList));
 
-                errorMessagesRef.innerHTML = "";
+//                errorMessagesRef.innerHTML = "";
                 
 //                let message = "You observation has been saved."
 //                let timeout = 2000;
 //                displayMessage(message, timeout);
 //                
 //                storeList()
+                
+                return;
             }
-            else
-            {
-                errorMessagesRef.innerHTML = "Number of seats in use is invalid.";
-            }
-        }
-        else
-        {
-            errorMessagesRef.innerHTML = "Incorrect inputs.";
-        }
-        
+        }    
     } 
-    else 
-    {
-        errorMessagesRef.innerHTML = "Incorrect inputs.";
-    }
+
+    
+    errorMessagesRef.innerHTML = "Incorrect inputs.";
+    
 }
 
 
@@ -374,8 +367,6 @@ function getAddress()
 
             console.log("unable to geocode! Response code: " + request.status);
             var data = JSON.parse(request.responseText);
-
-            console.log(data.status.message);
         } 
         else 
         {
@@ -388,7 +379,10 @@ function getAddress()
     request.onerror = function() 
     {
         // There was a connection error of some sort
-        console.log("unable to connect to server");        
+        console.log("unable to connect to server");      
+        
+        document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
+        document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
     };
     
    
