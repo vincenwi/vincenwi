@@ -57,7 +57,7 @@
             
 function getPosition()
 {
-            function displayElementsWithClass(className, display)
+    function displayElementsWithClass(className, display)
     {
         var elements = document.getElementsByClassName(className);
 
@@ -139,7 +139,8 @@ var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
     + 'key=' + apikey
     + '&q=' + encodeURIComponent(latitude + ',' + longitude)
     + '&pretty=1'
-    + '&no_annotations=1';
+    + '&no_annotations=1'
+    + '&roadinfo=1'
 
   // see full list of required and optional parameters:
   // https://opencagedata.com/api#forward

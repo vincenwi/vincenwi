@@ -28,7 +28,7 @@ var seatsTotalRef = document.getElementById("seatsTotal");
 
 
 
-var autoAddress, lightsOn, heatingCoolingOn
+var ranOnce, autoAddress, lightsOn, heatingCoolingOn
 
 var longitude,latitude;
 
@@ -39,27 +39,6 @@ var heatingCoolingSwitchRef = document.getElementsByClassName("mdl-switch")[1];
 var key = "ENG1003-RoomUseList";
 
 let errorMessagesRef = document.getElementById("errorMessages");
-
-let tempList = JSON.parse(localStorage.getItem(key));
-
-//mapboxgl.accessToken = "pk.eyJ1IjoiZ3JvdXAtMTMiLCJhIjoiY2szOWZsbTd0MDAxczNpcW5ubXhpaGw3NiJ9.HhkWfP-85qlnpM8KePkhOA";
-//
-//let caulfield = [145.0420733, -37.8770097];
-//
-//let map = new mapboxgl.Map({
-//            container: 'map',
-//            style: 'mapbox://styles/mapbox/streets-v10',
-//            zoom: 16,
-//            center: caulfield
-//        });
-
-
-
-
-// reverse geocoding
-
-
-
 
 
 function clearForm()
@@ -105,7 +84,7 @@ function clearForm()
         if (document.getElementById(textFieldIDs[i]).value !== "")
         {   
             document.getElementById(textFieldIDs[i]).value = "";
-            checkTextfieldClasses();
+            updateTextfieldClasses();
         }
         
         if(i in document.getElementsByClassName("mdl-switch") === true)
@@ -121,6 +100,15 @@ function clearForm()
     var snackbarContainer = document.querySelector('#toast');
     var showSnackbarButton = document.querySelector('#clearButton');
     
+    var data = 
+    {
+      message: 'Cleared.',
+      timeout: 2000,
+      actionHandler: undo,
+      actionText: 'Undo'
+    };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    
     // Returns what the user entered before the clearing
     function undo() 
     {
@@ -131,7 +119,7 @@ function clearForm()
         
         for(let i=0; i<textFieldIDs.length; i++)
         {
-            checkTextfieldClasses();
+            updateTextfieldClasses();
         }
         
         if(autoAddress === true)
@@ -150,17 +138,13 @@ function clearForm()
         }
         
     };
-    
-    var data = 
-    {
-      message: 'Cleared.',
-      timeout: 2000,
-      actionHandler: undo,
-      actionText: 'Undo'
-    };
-    snackbarContainer.MaterialSnackbar.showSnackbar(data);
+}
 
-  
+document.getElementById("observationForm").onkeypress= function()
+{
+    if(window.event.keyCode=='13'){
+        saveForm();
+    }
 }
 
 function saveForm()
@@ -236,17 +220,25 @@ function saveForm()
     }
 }
 
-document.getElementById("observationForm").onkeypress= function()
-{
-    if(window.event.keyCode=='13'){
-        saveForm();
-    }
-}
 
-              
-            
-function getPosition()
-{
+// Geolocation
+
+document.getElementById("useAddress").addEventListener("click",function(){
+    
+    if(this.checked)
+    {
+        ranOnce = false;
+        
+        getPosition();
+        document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.disable()
+        document.getElementsByClassName("mdl-checkbox")[0].MaterialCheckbox.disable()
+
+        
+    }
+
+})
+
+
     function displayElementsWithClass(className, display)
     {
         var elements = document.getElementsByClassName(className);
@@ -268,6 +260,8 @@ function getPosition()
     //   GPS sensor code (geolocation)
     // ======================================================================
 
+function getPosition()
+{
     if (navigator.geolocation)
     {
         let positionOptions = {
@@ -283,45 +277,48 @@ function getPosition()
     {
         displayElementsWithClass("gpsValue", false);
     }
-
-    function errorHandler(error)
-    {
-        if (error.code == 1)
-        {
-            document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
-            alert("Location access denied by user.");
-        }
-        else if (error.code == 2)
-        {
-            alert("Location unavailable.");
-        }
-        else if (error.code == 3)
-        {
-            alert("Location access timed out");
-        }
-        else
-        {
-            alert("Unknown error getting location.");
-        }
-    }
-    
- 
-
-    function showCurrentLocation(position)
-    {
-        // Demonstrate the current latitude and longitude:
-        latitude = Number(position.coords.latitude);
-        longitude = Number(position.coords.longitude);
-//        latitude = 0; longitude = 0;
-
-        let accuracy = Number(position.coords.accuracy).toFixed(2);
-        
-        getAddress();
-    }
 }
 
+
+
+function errorHandler(error)
+{
+    if (error.code == 1)
+    {
+        alert("Location access denied by user.");
+    }
+    else if (error.code == 2)
+    {
+        alert("Location unavailable.");
+    }
+    else if (error.code == 3)
+    {
+        alert("Location access timed out");
+    }
+    else
+    {
+        alert("Unknown error getting location.");
+    }
+    
+    document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
+    document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
+}
+
+function showCurrentLocation(position)
+{
+    // Demonstrate the current latitude and longitude:
+    latitude = Number(position.coords.latitude);
+    longitude = Number(position.coords.longitude);
+//        latitude = 0; longitude = 0;
+
+    let accuracy = Number(position.coords.accuracy).toFixed(2);
+
+    getAddress();
+}
+
+
 function getAddress()
-{            
+{
     var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
 
     var api_url = 'https://api.opencagedata.com/geocode/v1/json'
@@ -344,7 +341,7 @@ function getAddress()
         // see full list of possible response codes:
         // https://opencagedata.com/api#codes
 
-        if (request.status == 200)
+        if (request.status === 200 && ranOnce === false)
         { 
             // Success!
             var data = JSON.parse(request.responseText);
@@ -357,18 +354,19 @@ function getAddress()
             if(road)
             {
                 addressRef.value = road;
-                checkTextfieldClasses();
+                updateTextfieldClasses();
             }
             else if(footway)
             {
                 addressRef.value = footway;
-                checkTextfieldClasses();
+                updateTextfieldClasses();
             }
             else
             {
                 displayMessage("Unable to determine location, please enter your address manually.")
-                document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
             }
+            
+            document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
         } 
         else if (request.status <= 500)
         { 
@@ -383,6 +381,8 @@ function getAddress()
         {
             console.log("server error");
         }
+        
+        ranOnce = true;
     };
 
     request.onerror = function() 
@@ -390,21 +390,13 @@ function getAddress()
         // There was a connection error of some sort
         console.log("unable to connect to server");        
     };
-
+    
+   
     request.send();  // make the request
 }
             
             
-            
-document.getElementById("useAddress").addEventListener("change",function(){
-    
-    if(this.checked)
-    {
-        getPosition();
-    }
-})
-
-function checkTextfieldClasses()
+function updateTextfieldClasses()
 {
     for(let i=0; i<textFieldIDs.length; i++)
     {

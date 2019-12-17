@@ -114,7 +114,7 @@ class RoomUsage
     
     toString() 
     {
-        return 
+        return `Rm ${this._roomNumber}      Room ${this._roomNumber}      ${this._address}`;
     }
 }
 
@@ -279,21 +279,6 @@ function retrieveList()
     }
     roomUsageList.sortByDate();
 //    storeList() 
-
-}
-
-function storeList()
-{
-    for(let observation in roomUsageList._roomList)
-    {
-        let blankIndex = roomUsageList._roomList.indexOf(""); // returns -1 if "" cannot be found
-        if(blankIndex !== -1) 
-        {
-            roomUsageList._roomList.splice(blankIndex,1);
-        }
-    }
-    
-    localStorage.setItem(key, JSON.stringify(roomUsageList));
 }
 
 function deleteObservationAtIndex(index)
@@ -396,9 +381,22 @@ function getRoad(address)
     return address.slice(0,commaIndex);
 }
 
-
 window.onbeforeunload = closingCode;
 function closingCode(){
    storeList();
+}
+
+function storeList()
+{
+    for(let observation in roomUsageList._roomList)
+    {
+        let blankIndex = roomUsageList._roomList.indexOf(""); // returns -1 if "" cannot be found
+        if(blankIndex !== -1) 
+        {
+            roomUsageList._roomList.splice(blankIndex,1);
+        }
+    }
+    
+    localStorage.setItem(key, JSON.stringify(roomUsageList));
 }
 
