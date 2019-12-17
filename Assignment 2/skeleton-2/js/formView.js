@@ -217,7 +217,7 @@ function saveForm()
 //                let timeout = 2000;
 //                displayMessage(message, timeout);
 //                
-                storeList()
+//                storeList()
             }
             else
             {
@@ -288,28 +288,31 @@ function getPosition()
     {
         if (error.code == 1)
         {
-           alert("Location access denied by user.");
+            document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
+            alert("Location access denied by user.");
         }
         else if (error.code == 2)
         {
-           alert("Location unavailable.");
+            alert("Location unavailable.");
         }
         else if (error.code == 3)
         {
-           alert("Location access timed out");
+            alert("Location access timed out");
         }
         else
         {
-           alert("Unknown error getting location.");
+            alert("Unknown error getting location.");
         }
     }
+    
+ 
 
     function showCurrentLocation(position)
     {
         // Demonstrate the current latitude and longitude:
-//        latitude = Number(position.coords.latitude);
-//        longitude = Number(position.coords.longitude);
-        latitude = 0; longitude = 0;
+        latitude = Number(position.coords.latitude);
+        longitude = Number(position.coords.longitude);
+//        latitude = 0; longitude = 0;
 
         let accuracy = Number(position.coords.accuracy).toFixed(2);
         
@@ -345,6 +348,8 @@ function getAddress()
         { 
             // Success!
             var data = JSON.parse(request.responseText);
+            
+            console.log(data.results[0])
 
             let road = data.results[0].components.road;
             let footway = data.results[0].components.footway;

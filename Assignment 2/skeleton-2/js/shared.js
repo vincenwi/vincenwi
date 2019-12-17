@@ -162,9 +162,10 @@ class RoomUsageList
     
     removeObservation(index)
     {
-        this._roomList.splice(index,1);
+//        this._roomList.splice(index,1);
+        this._roomList[index] = ""
         this.updateCounter();
-        storeList();
+//        storeList();
     }
     
     get list() 
@@ -253,7 +254,7 @@ class RoomUsageList
     {
         this._roomList = new Array();
         this.updateCounter();
-        storeList();
+//        storeList();
     }
 }
 
@@ -283,6 +284,15 @@ function retrieveList()
 
 function storeList()
 {
+    for(let observation in roomUsageList._roomList)
+    {
+        let blankIndex = roomUsageList._roomList.indexOf(""); // returns -1 if "" cannot be found
+        if(blankIndex !== -1) 
+        {
+            roomUsageList._roomList.splice(blankIndex,1);
+        }
+    }
+    
     localStorage.setItem(key, JSON.stringify(roomUsageList));
 }
 
@@ -290,7 +300,6 @@ function deleteObservationAtIndex(index)
 {   
     roomUsageList.removeObservation(index);
     document.getElementById("observation" + index).remove()
-    
 }
 
 function getTime(time,type)
@@ -373,7 +382,6 @@ function displayError()
     errorMessagesRef.innerHTML = "Incorrect inputs.";
 }
 
-
 function getRoad(address)
 {
     for(let i=0; i<address.length; i++) 
@@ -388,4 +396,9 @@ function getRoad(address)
     return address.slice(0,commaIndex);
 }
 
+
+window.onbeforeunload = closingCode;
+function closingCode(){
+   storeList();
+}
 
