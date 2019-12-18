@@ -2,39 +2,29 @@
 
 var textFieldIDs = ["address", "roomNumber", "seatsUsed", "seatsTotal"];
 
-
-
-
-
-
-
-
-
-
-
-
 //var address = document.getElementById("address").value;
 //var roomNumber = document.getElementById("roomNumber").value;
 //var seatsUsed = document.getElementById("seatsUsed").value;
 //var seatsTotal = document.getElementById("seatsTotal").value;
 
 var addressRef = document.getElementById("address");
+var useAddressRef = document.getElementById("useAddress");
 var roomNumberRef = document.getElementById("roomNumber");
 var seatsUsedRef = document.getElementById("seatsUsed");
 var seatsTotalRef = document.getElementById("seatsTotal");
 
+var addressClassRef = document.getElementsByClassName("mdl-textfield")[0];
+var useAddressClassRef = document.getElementsByClassName("mdl-checkbox")[0];
+var roomNumberClassRef = document.getElementsByClassName("mdl-textfield")[1];
+var lightsClassRef = document.getElementsByClassName("mdl-switch")[0];
+var heatingCoolingClassRef = document.getElementsByClassName("mdl-switch")[1];
+var seatsUsedClassRef = document.getElementsByClassName("mdl-textfield")[2];
+var seatsTotalClassRef = document.getElementsByClassName("mdl-textfield")[3];
 
-
-
-
-
-var ranOnce, autoAddress, lightsOn, heatingCoolingOn
+var address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, heatingCoolingOn
 
 var longitude,latitude;
 
-var checkboxRef = document.getElementsByClassName("mdl-checkbox")[0];
-var lightsSwitchRef = document.getElementsByClassName("mdl-switch")[0];
-var heatingCoolingSwitchRef = document.getElementsByClassName("mdl-switch")[1];
 
 var key = "ENG1003-RoomUseList";
 
@@ -44,57 +34,25 @@ let errorMessagesRef = document.getElementById("errorMessages");
 function clearForm()
 {        
     // stores the inputs temporarily in case the user wants to undo the clearing
-    
     let address = addressRef.value;
     let roomNumber = roomNumberRef.value;
     let seatsUsed = seatsUsedRef.value;
     let seatsTotal = seatsTotalRef.value;
     
-    if(checkboxRef.classList.value.includes("is-checked") === true) 
-    {
-        autoAddress = true;
-    }
-    else
-    {
-        autoAddress = false;
-    }
+    useAddress = useAddressClassRef.MaterialCheckbox.inputElement_.checked;
+    lightsOn = lightsClassRef.MaterialSwitch.inputElement_.checked;
+    heatingCoolingOn = heatingCoolingClassRef.MaterialSwitch.inputElement_.checked;
     
-    if(lightsSwitchRef.classList.value.includes("is-checked") === true) 
-    {
-        lightsOn = true;
-    }
-    else
-    {
-        lightsOn = false;
-    }
+    addressRef.value = "";
+    roomNumberRef.value = "";
+    seatsUsedRef.value = "";
+    seatsTotalRef.value = "";
+    updateTextfieldClasses();
+    
+    lightsClassRef.MaterialSwitch.off();
+    heatingCoolingClassRef.MaterialSwitch.off();
+    useAddressClassRef.MaterialCheckbox.uncheck();
 
-    if(heatingCoolingSwitchRef.classList.value.includes("is-checked") === true) 
-    {
-        heatingCoolingOn = true; 
-    }
-    else
-    {
-        heatingCoolingOn = false;
-    }
-
-    // clearing all the inputs
-    for(let i=0; i<textFieldIDs.length; i++)
-    {
-        // checks if the text fields are empty, if they are then the field will be emptied and the field will be resetted
-        if (document.getElementById(textFieldIDs[i]).value !== "")
-        {   
-            document.getElementById(textFieldIDs[i]).value = "";
-            updateTextfieldClasses();
-        }
-        
-        if(i in document.getElementsByClassName("mdl-switch") === true)
-        {
-            document.getElementsByClassName("mdl-switch")[i].classList.remove("is-checked");
-        }
-    }
-    
-    document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
-    
     errorMessagesRef.innerHTML = "";
     
     var snackbarContainer = document.querySelector('#toast');
@@ -103,7 +61,7 @@ function clearForm()
     var data = 
     {
       message: 'Cleared.',
-      timeout: 2000,
+      timeout: 4000,
       actionHandler: undo,
       actionText: 'Undo'
     };
@@ -117,26 +75,11 @@ function clearForm()
         seatsUsedRef.value = seatsUsed;
         seatsTotalRef.value = seatsTotal;
         
-        for(let i=0; i<textFieldIDs.length; i++)
-        {
-            updateTextfieldClasses();
-        }
+        updateTextfieldClasses();
         
-        if(autoAddress === true)
-        {
-            document.getElementsByClassName("mdl-checkbox")[0].classList.value += " is-checked";
-        }
-        
-        if(lightsOn === true)
-        {
-            document.getElementsByClassName("mdl-switch")[0].classList.value += " is-checked";
-        }
-        
-        if(heatingCoolingOn === true)
-        {
-            document.getElementsByClassName("mdl-switch")[1].classList.value += " is-checked";
-        }
-        
+        useAddress ? useAddressClassRef.MaterialCheckbox.check() : "";
+        lightsOn ? lightsClassRef.MaterialSwitch.on() : "";
+        heatingCoolingOn ? heatingCoolingClassRef.MaterialSwitch.on() : "";        
     };
 }
 
@@ -149,70 +92,35 @@ document.getElementById("observationForm").onkeypress= function()
 
 function saveForm()
 {   
-//    retrieveList();
-    
-    let addressRef = document.getElementById("address");
-    let roomNumberRef = document.getElementById("roomNumber");
-    let lightsRef = document.getElementById("lights");
-    let heatingCoolingRef = document.getElementById("heatingCooling");
-    let seatsUsedRef = document.getElementById("seatsUsed");
-    let seatsTotalRef = document.getElementById("seatsTotal");
-
-    let address = addressRef.value;
-    let roomNumber = roomNumberRef.value;
+    let address = addressRef.value.trim();
+    let roomNumber = roomNumberRef.value.trim();
     let seatsUsed = Number(seatsUsedRef.value);
     let seatsTotal = Number(seatsTotalRef.value);
     let lightsOn,heatingCoolingOn;
     
-    if(address && roomNumber && seatsUsed>=0 && seatsTotal>0 && Number.isInteger(seatsUsed)===true && Number.isInteger(seatsTotal)===true) 
+    if(address && roomNumber && seatsUsed>=0 && seatsTotal>=0 && Number.isInteger(seatsUsed)===true && Number.isInteger(seatsTotal)===true) 
     {
-        if (!document.querySelector(".is-invalid")) 
+        if (!document.querySelector(".is-invalid")) // detects if seatsUsed or seatsTotal triggers "Input is not a number!"
         {
             if(seatsUsed <= seatsTotal)
             {
-                if(document.getElementsByClassName("mdl-switch")[0].classList.value.includes("is-checked") === true) 
-                {
-                    lightsOn = true;
-                }
-                else
-                {
-                    lightsOn = false;
-                }
-
-                if(document.getElementsByClassName("mdl-switch")[1].classList.value.includes("is-checked") === true) 
-                {
-                    heatingCoolingOn = true; 
-                }
-                else
-                {
-                    heatingCoolingOn = false;
-                }
-                
+                lightsOn = lightsClassRef.MaterialSwitch.inputElement_.checked;
+                heatingCoolingOn = heatingCoolingClassRef.MaterialSwitch.inputElement_.checked;
 
                 let newObservation = new RoomUsage(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal)
                 roomUsageList.addObservation(newObservation);
                 
                 // find out if RoomUsageList class should be by address or something else
                 localStorage.setItem(key,JSON.stringify(roomUsageList));
-
-//                errorMessagesRef.innerHTML = "";
-                
-//                let message = "You observation has been saved."
-//                let timeout = 2000;
-//                displayMessage(message, timeout);
-//                
-//                storeList()
                 
                 return;
             }
         }    
     } 
-
     
     errorMessagesRef.innerHTML = "Incorrect inputs.";
     
 }
-
 
 // Geolocation
 
@@ -223,35 +131,33 @@ document.getElementById("useAddress").addEventListener("click",function(){
         ranOnce = false;
         
         getPosition();
-        document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.disable()
-        document.getElementsByClassName("mdl-checkbox")[0].MaterialCheckbox.disable()
-
-        
+        addressClassRef.MaterialTextfield.disable();
+        useAddressClassRef.MaterialCheckbox.disable();
     }
 
 })
 
 
-    function displayElementsWithClass(className, display)
-    {
-        var elements = document.getElementsByClassName(className);
+function displayElementsWithClass(className, display)
+{
+    var elements = document.getElementsByClassName(className);
 
-        for (var i = 0; i < elements.length; i++)
+    for (var i = 0; i < elements.length; i++)
+    {
+        if (display)
         {
-            if (display)
-            {
-                elements[i].style.display = "block";
-            }
-            else
-            {
-                elements[i].style.display = "none";
-            }
+            elements[i].style.display = "block";
+        }
+        else
+        {
+            elements[i].style.display = "none";
         }
     }
+}
 
-    // ======================================================================
-    //   GPS sensor code (geolocation)
-    // ======================================================================
+// ======================================================================
+//   GPS sensor code (geolocation)
+// ======================================================================
 
 function getPosition()
 {
@@ -272,8 +178,6 @@ function getPosition()
     }
 }
 
-
-
 function errorHandler(error)
 {
     if (error.code == 1)
@@ -293,8 +197,8 @@ function errorHandler(error)
         alert("Unknown error getting location.");
     }
     
-    document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
-    document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
+    addressClassRef.MaterialTextfield.enable();
+    useAddressClassRef.MaterialCheckbox.uncheck()   
 }
 
 function showCurrentLocation(position)
@@ -308,7 +212,6 @@ function showCurrentLocation(position)
 
     getAddress();
 }
-
 
 function getAddress()
 {
@@ -328,49 +231,49 @@ function getAddress()
 
     var request = new XMLHttpRequest();
     request.open('GET', request_url, true);
-
+    
     request.onload = function() 
     {
         // see full list of possible response codes:
         // https://opencagedata.com/api#codes
-
-        if (request.status === 200 && ranOnce === false)
-        { 
-            // Success!
-            var data = JSON.parse(request.responseText);
-            
-            console.log(data.results[0])
-
-            let road = data.results[0].components.road;
-            let footway = data.results[0].components.footway;
-
-            if(road)
-            {
-                addressRef.value = road;
-                updateTextfieldClasses();
-            }
-            else if(footway)
-            {
-                addressRef.value = footway;
-                updateTextfieldClasses();
-            }
-            else
-            {
-                displayMessage("Unable to determine location, please enter your address manually.")
-            }
-            
-            document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
-        } 
-        else if (request.status <= 500)
-        { 
-            // We reached our target server, but it returned an error
-
-            console.log("unable to geocode! Response code: " + request.status);
-            var data = JSON.parse(request.responseText);
-        } 
-        else 
+        if(ranOnce)
         {
-            console.log("server error");
+            if (request.status === 200)
+            { 
+                // Success!
+                var data = JSON.parse(request.responseText);
+
+                let road = data.results[0].components.road;
+                let footway = data.results[0].components.footway;
+
+                if(road)
+                {
+                    addressRef.value = road;
+                    updateTextfieldClasses();
+                }
+                else if(footway)
+                {
+                    addressRef.value = footway;
+                    updateTextfieldClasses();
+                }
+                else
+                {
+                    displayMessage("Unable to determine location, please enter your address manually.")
+                }
+
+                addressClassRef.MaterialTextfield.enable();
+            } 
+            else if (request.status <= 500)
+            { 
+                // We reached our target server, but it returned an error
+
+                console.log("unable to geocode! Response code: " + request.status);
+                var data = JSON.parse(request.responseText);
+            } 
+            else 
+            {
+                console.log("server error");
+            }
         }
         
         ranOnce = true;
@@ -381,19 +284,18 @@ function getAddress()
         // There was a connection error of some sort
         console.log("unable to connect to server");      
         
-        document.getElementsByClassName("mdl-textfield")[0].MaterialTextfield.enable();
-        document.getElementsByClassName("mdl-checkbox")[0].classList.remove("is-checked");
+        addressClassRef.MaterialTextfield.enable();
+        useAddress.MaterialCheckbox.uncheck();
     };
-    
    
     request.send();  // make the request
 }
             
             
 function updateTextfieldClasses()
-{
-    for(let i=0; i<textFieldIDs.length; i++)
-    {
-        document.getElementsByClassName("mdl-textfield")[i].MaterialTextfield.updateClasses_();
-    }
+{    
+    addressClassRef.MaterialTextfield.updateClasses_();
+    roomNumberClassRef.MaterialTextfield.updateClasses_();
+    seatsUsedClassRef.MaterialTextfield.updateClasses_();
+    seatsTotalClassRef.MaterialTextfield.updateClasses_();
 }

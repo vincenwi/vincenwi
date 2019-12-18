@@ -15,14 +15,6 @@ class RoomUsage
     
     initialiseFromRoomUsagePDO(roomUsage)
     {
-//        for(let info in roomUsage)
-//        {
-//            this[info](roomUsage[info]);
-//        }
-//        console.log(roomUsage)
-        
-        
-        
         this.roomNumber = roomUsage._roomNumber;
         this.address = roomUsage._address;
         this.lightsOn = roomUsage._lightsOn;
@@ -30,26 +22,16 @@ class RoomUsage
         this.seatsUsed = roomUsage._seatsUsed;
         this.seatsTotal = roomUsage._seatsTotal;
         this.timeChecked = roomUsage._timeChecked;
-        
-        
     }
     
     get roomNumber() 
     {
-        
         return this._roomNumber
     }
     
     set roomNumber(newRoomNumber) 
     {
-        if(newRoomNumber)
-        {
-            this._roomNumber = newRoomNumber;
-        }
-        else
-        {
-//            displayError();
-        }
+        this._roomNumber = newRoomNumber;
     }
     
     get address() 
@@ -127,12 +109,17 @@ class RoomUsageList
         this.updateCounter();
     }
     
+    get list() 
+    {
+        return this._roomList;
+    }
+    
     addObservation(newObservation) 
     {   
         let errorMessagesRef = document.getElementById("errorMessages");
-        
-        if(this.checkExistence(newObservation) === false)
-        {
+//        
+//        if(this.checkExistence(newObservation) === false)
+//        {
 //        console.log(this._roomList.length)
 //        console.log(observation)
             this._roomList.push(newObservation);
@@ -143,29 +130,16 @@ class RoomUsageList
                 errorMessagesRef.innerHTML = "";
                 displayMessage("You observation has been saved.")
             }
-        }
-        else
-        {
-            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
-            {
-                
-//                displayMessage("Observation already exists.");
-                errorMessagesRef.innerHTML = "Observaiton already exists.";
-            }
-        }
-    }
-    
-    
-    
-    removeObservation(index)
-    {
-        this._roomList[index] = ""
-        this.updateCounter();
-    }
-    
-    get list() 
-    {
-        return this._roomList;
+//        }
+//        else
+//        {
+//            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
+//            {
+//                
+////                displayMessage("Observation already exists.");
+//                errorMessagesRef.innerHTML = "Observaiton already exists.";
+//            }
+//        }
     }
     
     checkExistence(newObservation)
@@ -204,6 +178,7 @@ class RoomUsageList
                 break;
             }
         }
+        
         return observationExists;
     }
     
@@ -233,29 +208,47 @@ class RoomUsageList
         
         sorted.sort(function(a,b){return b[2]-a[2]});
         
-        let tempList = new RoomUsageList();
+        let sortedList = new RoomUsageList();
         
         for(let observation in this._roomList)
         {   
-            tempList.addObservation(sorted[observation][1]);
+            sortedList.addObservation(sorted[observation][1]);
         }
 
-        this._roomList = tempList._roomList
-
-
+        this._roomList = sortedList._roomList
+    } 
+    
+    removeObservation(index)
+    {
+        this._roomList[index] = "";
+        this.updateCounter();
     }
     
     clearObservations()
     {
         this._roomList = new Array();
         this.updateCounter();
-//        storeList();
     }
     
-    aggregateBy()
+    aggregateBy(aggKey)
     {
-        let bucket
+//        let hour = observation._timeChecked.getHours();
         
+        let bucket = new Array();
+        
+        if(aggKey === "time")
+        {
+            for(let observation in this._roomList)
+            {
+                for(let hour=0; hour<=23; hour++)
+                {
+                    if(getTime(this._roomList[observation].timeChecked,"hour") === hour)
+                    {
+                        bucket.addObservation({})
+                    }
+                }
+            }
+        }
         
         return bucket;
     }
