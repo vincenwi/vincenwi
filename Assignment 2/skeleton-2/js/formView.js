@@ -2,11 +2,6 @@
 
 var textFieldIDs = ["address", "roomNumber", "seatsUsed", "seatsTotal"];
 
-//var address = document.getElementById("address").value;
-//var roomNumber = document.getElementById("roomNumber").value;
-//var seatsUsed = document.getElementById("seatsUsed").value;
-//var seatsTotal = document.getElementById("seatsTotal").value;
-
 var addressRef = document.getElementById("address");
 var useAddressRef = document.getElementById("useAddress");
 var roomNumberRef = document.getElementById("roomNumber");
@@ -25,11 +20,7 @@ var address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, h
 
 var longitude,latitude;
 
-
-var key = "ENG1003-RoomUseList";
-
 let errorMessagesRef = document.getElementById("errorMessages");
-
 
 function clearForm()
 {        
@@ -134,7 +125,6 @@ document.getElementById("useAddress").addEventListener("click",function(){
         addressClassRef.MaterialTextfield.disable();
         useAddressClassRef.MaterialCheckbox.disable();
     }
-
 })
 
 

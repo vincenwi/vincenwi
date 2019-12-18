@@ -123,8 +123,6 @@ function searchFor()
     
     let searchList = new RoomUsageList();
     
-//    console.log(input)
-    
     for(let observation in roomUsageList._roomList)
     {
         let index = roomUsageList._roomList[observation].toString().toLowerCase().indexOf(input);
