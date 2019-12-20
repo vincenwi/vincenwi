@@ -6,6 +6,7 @@ function createElements(roomUsageList)
 {
 
     let body = document.getElementById("content");
+    let listHTML = "";
 
     for(let index=0; index<roomUsageList._roomList.length; index++)
     {
@@ -112,6 +113,12 @@ function createElements(roomUsageList)
         document.getElementById("date" + index).innerHTML = `${getTime(time,"date")} ${getTime(time,"month")}`;
 
         document.getElementById("address" + index).innerHTML = observation._address + "<br/>Rm " + observation._roomNumber;
+        
+        let date = 
+        
+        
+        
+        listHTML += "<div class='mdl-cell mdl-cell--4-col' id='observation" + index + "><table class='observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h4 id='date" + index + " class='date'>17 Dec.</h4><h4 id="address0">6 Chancellor's Walk<br>Rm 384</h4><h4 id="roomNumber0"></h4></th></tr></thead><tbody><tr><td class="mdl-data-table__cell--non-numeric" id="observationData0">Time: 05:13:18 pm<br>Lights: Off<br>Heating/cooling: On<br>Seat usage: 0 / 1<br><button class="mdl-button mdl-js-button mdl-button--icon" onclick="deleteObservationAtIndex(0)" data-upgraded=",MaterialButton"><i class="material-icons" id="deleteButton0">delete</i></button></td></tr></tbody></table></div>
     }
 }
 
