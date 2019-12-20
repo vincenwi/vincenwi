@@ -96,7 +96,7 @@ class RoomUsage
     
     toString() 
     {
-        return `Rm ${this._roomNumber}      Room ${this._roomNumber}      ${this._address}`;
+        return `Rm ${this._roomNumber}                   Room ${this._roomNumber}                     ${this._address}`;
     }
 }
 

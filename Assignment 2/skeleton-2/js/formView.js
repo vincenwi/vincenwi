@@ -16,7 +16,7 @@ var heatingCoolingClassRef = document.getElementsByClassName("mdl-switch")[1];
 var seatsUsedClassRef = document.getElementsByClassName("mdl-textfield")[2];
 var seatsTotalClassRef = document.getElementsByClassName("mdl-textfield")[3];
 
-var address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, heatingCoolingOn
+var address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, heatingCoolingOn;
 
 var longitude,latitude;
 
@@ -71,12 +71,13 @@ function clearForm()
         useAddress ? useAddressClassRef.MaterialCheckbox.check() : "";
         lightsOn ? lightsClassRef.MaterialSwitch.on() : "";
         heatingCoolingOn ? heatingCoolingClassRef.MaterialSwitch.on() : "";        
-    };
+    }
 }
 
-document.getElementById("observationForm").onkeypress= function()
+document.getElementById("observationForm").onkeypress = function()
 {
-    if(window.event.keyCode=='13'){
+    if(window.event.keyCode=='13')
+    {
         saveForm();
     }
 }
@@ -188,15 +189,15 @@ function errorHandler(error)
     }
     
     addressClassRef.MaterialTextfield.enable();
-    useAddressClassRef.MaterialCheckbox.uncheck()   
+    useAddressClassRef.MaterialCheckbox.uncheck(); 
 }
 
 function showCurrentLocation(position)
 {
     // Demonstrate the current latitude and longitude:
-    latitude = Number(position.coords.latitude);
-    longitude = Number(position.coords.longitude);
-//        latitude = 0; longitude = 0;
+//    latitude = Number(position.coords.latitude);
+//    longitude = Number(position.coords.longitude);
+        latitude = 0; longitude = 0;
 
     let accuracy = Number(position.coords.accuracy).toFixed(2);
 
@@ -235,6 +236,8 @@ function getAddress()
 
                 let road = data.results[0].components.road;
                 let footway = data.results[0].components.footway;
+                
+                console.log(data)
 
                 if(road)
                 {
@@ -248,10 +251,11 @@ function getAddress()
                 }
                 else
                 {
-                    displayMessage("Unable to determine location, please enter your address manually.")
+                    displayMessage("Unable to determine location, please enter your address manually.",5000)
                 }
 
                 addressClassRef.MaterialTextfield.enable();
+                useAddressClassRef.MaterialCheckbox.uncheck();
             } 
             else if (request.status <= 500)
             { 
