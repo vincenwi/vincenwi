@@ -156,6 +156,7 @@ class RoomUsageList
             {
                 if(info !== "_timeChecked")
                 {
+
                     if(currentObservation[info] === newObservation[info])
                     {
                         observationExists = true;
@@ -233,56 +234,48 @@ class RoomUsageList
     {
 //        let hour = observation._timeChecked.getHours();
         
-        let bucket = new RoomUsageList();
-//        let roomInfo;
-
+        let bucket = new Array();
+        
+        
         if(aggKey === "time")
         {
-            let listOfHours = new Array();
             
-            for(let i in this._roomList)
+            for(let hour=0; hour<=23; hour++)
             {
-                let observation = this._roomList[i];
-                let time = observation.timeChecked;
-                let hour = time.getHours();
-                hour > 12 ? hour -= 12 : "";
-                
-                hour += amPm(time.getHours());
-                
-                let found = listOfHours.indexOf(hour) === -1 ? true : false;
-                
-                if(found)
+                let temp = new Array();
+                for(let i in this._roomList)
                 {
-                    bucket[hour] = new RoomUsageList();
+                    let observation = this._roomList[i];
+                    let time = observation.timeChecked;
                     
-                    listOfHours.push(hour);
+                    let onOff;
+                    observation.heatingCoolingOn ? onOff = "On" : onOff = "Off";
+                    
+                    if(time.getHours() === hour)
+                    {
+                        let roomInfo = {
+                            "Time": `${getTime(time,"hours")}:${getTime(time,"minutes")}:${getTime(time,"seconds")}`,
+                            "AC": onOff,
+                            "Seats Used": Math.round(observation.seatsUsed/observation.seatsTotal*100) + "%"
+                        };
+                        
+                        temp.push(roomInfo);
+                    }
                 }
-                
-                bucket[hour].addObservation(observation);
+                bucket[hour] = temp;
             }
         }
         else if(aggKey === "building")
         {
-            let listOfAddresses = new Array();
             
-            for(let i in this._roomList)
-            {
-                let observation = this.list[i];
-                let address = observation.address;
-                
-                let found = listOfAddresses.indexOf(address) ? true : false;
-                
-                if(found)
-                {
-                    bucket[address] = new RoomUsageList();
-                    
-                    listOfAddresses.push(address);
-                }
-                
-                bucket[address].addObservation(observation);
-            }
+            
+            
+            
+            
+            
         }
-        
+
+                
         return bucket;
     }
     
@@ -378,18 +371,16 @@ function getTime(time,type)
             {
                 return seconds;
             }
-    }
-}
-
-function amPm(hour)
-{
-    if(hour<12 || hour===24)
-    {
-        return "am";
-    }
-    else
-    {
-        return "pm";
+            
+        case "ampm":
+            if(hours<12 || hours===24)
+            {
+                return "am";
+            }
+            else
+            {
+                return "pm";
+            }
     }
 }
 

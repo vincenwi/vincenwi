@@ -117,12 +117,12 @@ function saveForm()
 // Geolocation
 
 document.getElementById("useAddress").addEventListener("click",function(){
-    
     if(this.checked)
     {
         ranOnce = false;
         
         getPosition();
+        
         addressClassRef.MaterialTextfield.disable();
         useAddressClassRef.MaterialCheckbox.disable();
     }
