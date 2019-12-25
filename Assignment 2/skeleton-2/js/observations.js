@@ -1,8 +1,10 @@
 "use strict";
 
+let body = document.getElementById("content");
+
 function searchFor()
 {
-    document.getElementById("content").innerHTML = "";
+    body.innerHTML = "";
     
     let input = document.getElementById("searchField").value.toLowerCase();
     
@@ -33,8 +35,6 @@ createElements(roomUsageList);
 
 function createElements(roomUsageList)
 {
-
-    let body = document.getElementById("content");
     let listHTML = "";
 
     for(let i=0; i<roomUsageList._numberOfObservations; i++)
@@ -43,8 +43,8 @@ function createElements(roomUsageList)
 
         let lights, heatingCooling;
 
-        observation._lightsOn === true ? lights = "On" : lights = "Off";
-        observation._heatingCoolingOn === true ? heatingCooling = "On" : heatingCooling = "Off";
+        lights = observation.lightsOn === true ?  "On" : "Off";
+        heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
         
         let address = observation._address;
         let roomNumber = observation._roomNumber;

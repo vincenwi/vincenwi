@@ -94,6 +94,11 @@ class RoomUsage
         this._timeChecked = new Date(newTimeChecked);
     }
     
+    get occupancy()
+    {
+        return this._occupancy = this._seatsUsed === 0 && this._seatsTotal === 0 ? 0 : this._seatsUsed/this._seatsTotal*100;;
+    }
+    
     toString() 
     {
         return `Rm ${this._roomNumber}                   Room ${this._roomNumber}                     ${this._address}`;
@@ -205,7 +210,7 @@ class RoomUsageList
             sorted.push([observation,this._roomList[observation],this._roomList[observation]._timeChecked])
         }
         
-        sorted.sort(function(a,b){return b[2]-a[2]});
+        sorted.sort((a,b) => b[2]-a[2]);
         
         let sortedList = new RoomUsageList();
         
@@ -229,20 +234,20 @@ class RoomUsageList
         this.updateCounter();
     }
     
-    aggregateBy(aggKey)
+    aggregateBy(type)
     {
 //        let hour = observation._timeChecked.getHours();
         
         let bucket = new RoomUsageList();
 //        let roomInfo;
 
-        if(aggKey === "time")
+        if(type === "time")
         {
             let listOfHours = new Array();
             
-            for(let i in this._roomList)
+            for(let i in this.list)
             {
-                let observation = this._roomList[i];
+                let observation = this.list[i];
                 let time = observation.timeChecked;
                 let hour = time.getHours();
                 hour > 12 ? hour -= 12 : "";
@@ -261,27 +266,71 @@ class RoomUsageList
                 bucket[hour].addObservation(observation);
             }
         }
-        else if(aggKey === "building")
+        else if(type === "building")
         {
             let listOfAddresses = new Array();
             
-            for(let i in this._roomList)
+            for(let i in this.list)
             {
                 let observation = this.list[i];
                 let address = observation.address;
                 
-                let found = listOfAddresses.indexOf(address) ? true : false;
+                let addressIsNew = listOfAddresses.indexOf(address) === -1 ? true : false;
                 
-                if(found)
+                if(addressIsNew)
                 {
-                    bucket[address] = new RoomUsageList();
-                    
                     listOfAddresses.push(address);
+                    bucket[address] = new RoomUsageList();
                 }
                 
                 bucket[address].addObservation(observation);
+                
             }
         }
+        else if(type === "ac")
+        {    
+            bucket["On"] = new RoomUsageList();
+            bucket["Off"] = new RoomUsageList();
+                
+            for(let i in this.list)
+            {
+                let observation = this.list[i];
+                let heatingCooling = observation.heatingCoolingOn;
+                
+                if(heatingCooling)
+                {
+                    bucket["On"].addObservation(observation);
+                }
+                else
+                {
+                    bucket["Off"].addObservation(observation);
+                }
+            }
+        }
+        else if(type === "lights")
+        {    
+            bucket["On"] = new RoomUsageList();
+            bucket["Off"] = new RoomUsageList();
+                
+            for(let i in this.list)
+            {
+                let observation = this.list[i];
+                let lights = observation.lightsOn;
+                
+                if(lights)
+                {
+                    bucket["On"].addObservation(observation);
+                }
+                else
+                {
+                    bucket["Off"].addObservation(observation);
+                }
+            }
+        }
+        
+//        return bucket[aggKey];
+        delete bucket._roomList
+        delete bucket._numberOfObservations;
         
         return bucket;
     }
@@ -294,7 +343,8 @@ class RoomUsageList
 
 var key = "ENG1003-RoomUseList";
 var roomUsageList;
-retrieveList();
+
+window.onload = retrieveList();
 
 function retrieveList()
 {
@@ -417,10 +467,7 @@ function getRoad(address)
     return address.slice(0,commaIndex);
 }
 
-window.onbeforeunload = closingCode;
-function closingCode(){
-   storeList();
-}
+window.onbeforeunload = storeList;
 
 function storeList()
 {
