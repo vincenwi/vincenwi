@@ -1,11 +1,9 @@
 "use strict";
 
 let type = "time";
-
 let bucket = roomUsageList.aggregateBy(type);
 
 let body = document.getElementById("content");
-
 let listHTML = "";
 
 for(let i in bucket)

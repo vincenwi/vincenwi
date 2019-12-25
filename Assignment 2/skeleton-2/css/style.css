@@ -31,3 +31,7 @@ td .mdl-textfield {
 #errorMessages {
     color: #d50000;
 }
+
+.wasteful {
+    background-color: #ffd4d4;
+}

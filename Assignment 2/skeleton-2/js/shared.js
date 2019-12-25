@@ -329,7 +329,7 @@ class RoomUsageList
         }
         
 //        return bucket[aggKey];
-        delete bucket._roomList
+        delete bucket._roomList;
         delete bucket._numberOfObservations;
         
         return bucket;

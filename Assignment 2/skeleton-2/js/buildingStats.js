@@ -1,17 +1,13 @@
 "use strict";
 
 let type = "building";
-
 let bucket = roomUsageList.aggregateBy(type);
 
 let body = document.getElementById("content");
-
 let listHTML = "";
 
 for(let i in bucket)
 {
-    console.log(bucket[i])
-    
     let wastefulCount = 0;
     let totalOccupancy = 0;
     let totalLightsOn = 0;
@@ -45,14 +41,14 @@ for(let i in bucket)
     averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";
     averageHeatingCoolingUsage % 1 === 0 ? averageHeatingCoolingUsage += ".0" : "";
 
-listHTML += "<div class='mdl-cell mdl-cell--4-col'><table class='observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h4>" + address + "</h4></th></tr></thead><tbody><tr><td class='mdl-data-table__cell--non-numeric'>"
-
-listHTML += "Observations: " + numberOfObservations + "<br>";
-listHTML += "Wasteful observations: " + wastefulCount + "<br>";
-listHTML += "Average seat utilisation: " + averageOccupancy + "%<br>";
-listHTML += "Average lights utilisation: " + averageLightsUsage + "%<br>";
-listHTML += "Average heating/cooling utilisation: " + averageHeatingCoolingUsage +"% </td></tr></tbody></table></div>"
-    
+    listHTML += "<div class='mdl-cell mdl-cell--4-col'><table id='building' class='observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h4>";
+    listHTML += address + "</h4></th></tr></thead><tbody><tr><td class='mdl-data-table__cell--non-numeric ";
+    listHTML += wastefulCount !== 0 ? "wasteful" : ""; // highlights the buildings that have wasteful observations
+    listHTML += "'> Observations: " + numberOfObservations + "<br>";
+    listHTML += "Wasteful observations: " + wastefulCount + "<br>";
+    listHTML += "Average seat utilisation: " + averageOccupancy + "%<br>";
+    listHTML += "Average lights utilisation: " + averageLightsUsage + "%<br>";
+    listHTML += "Average heating/cooling utilisation: " + averageHeatingCoolingUsage +"% </td></tr></tbody></table></div>";
 }
 
 body.innerHTML = listHTML;
