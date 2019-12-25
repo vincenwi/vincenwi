@@ -243,27 +243,22 @@ class RoomUsageList
 
         if(type === "time")
         {
-            let listOfHours = new Array();
-            
-            for(let i in this.list)
+            for(let currentHour=0; currentHour<24; currentHour++)
             {
-                let observation = this.list[i];
-                let time = observation.timeChecked;
-                let hour = time.getHours();
-                hour > 12 ? hour -= 12 : "";
+                let hourStr = currentHour > 12 ? currentHour - 12 : currentHour;
+                hourStr += amPm(currentHour);
+                bucket[hourStr] = new RoomUsageList();
                 
-                hour += amPm(time.getHours());
-                
-                let found = listOfHours.indexOf(hour) === -1 ? true : false;
-                
-                if(found)
+                for(let i in this.list)
                 {
-                    bucket[hour] = new RoomUsageList();
+                    let observation = this.list[i];
+                    let time = observation.timeChecked;
+                    let hour = time.getHours();
                     
-                    listOfHours.push(hour);
+                    currentHour === hour ? bucket[hourStr].addObservation(observation) : "";
                 }
                 
-                bucket[hour].addObservation(observation);
+                bucket[hourStr]._numberOfObservations === 0 ? delete bucket[hourStr] : "";
             }
         }
         else if(type === "building")
