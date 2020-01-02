@@ -50,9 +50,8 @@ function createElements(roomUsageList)
         let roomNumber = observation._roomNumber;
         let seatUsage = `${observation._seatsUsed} / ${observation._seatsTotal}`;
         let timeChecked = observation._timeChecked;
-        let date = `${getTime(timeChecked,"date")} ${getTime(timeChecked,"month")}`;
+        let date = `${getTime(timeChecked,"date")} ${getTime(timeChecked,"monthName")}`;
         let time = `${getTime(timeChecked,"hours")}:${getTime(timeChecked,"minutes")}:${getTime(timeChecked,"seconds")} ${amPm(timeChecked.getHours())}`;
-        
         
         listHTML += "<div class='mdl-cell mdl-cell--4-col' id='observation" + i ;
         listHTML += "'><table class='observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h4 class='date'>" + date; 

@@ -242,10 +242,7 @@ class RoomUsageList
     
     aggregateBy(type)
     {
-//        let hour = observation._timeChecked.getHours();
-        
-        let bucket = new RoomUsageList();
-//        let roomInfo;
+        let bucket = new Object();
 
         if(type === "time")
         {
@@ -253,7 +250,8 @@ class RoomUsageList
             {
                 let hourStr = currentHour > 12 ? currentHour - 12 : currentHour;
                 hourStr += amPm(currentHour);
-                bucket[hourStr] = new RoomUsageList();
+                
+                bucket.hasOwnProperty(hourStr) === false ? bucket[hourStr] = new RoomUsageList() : "";
                 
                 for(let i in this.list)
                 {
@@ -269,62 +267,14 @@ class RoomUsageList
         }
         else if(type === "building")
         {
-            let listOfAddresses = new Array();
-            
             for(let i in this.list)
             {
                 let observation = this.list[i];
                 let address = observation.address;
                 
-                let addressIsNew = listOfAddresses.indexOf(address) === -1 ? true : false;
-                
-                if(addressIsNew)
-                {
-                    listOfAddresses.push(address);
-                    bucket[address] = new RoomUsageList();
-                }
+                bucket.hasOwnProperty(address) === false ? bucket[address] = new RoomUsageList() : "";
                 
                 bucket[address].addObservation(observation);
-            }
-        }
-        else if(type === "ac")
-        {    
-            bucket["On"] = new RoomUsageList();
-            bucket["Off"] = new RoomUsageList();
-                
-            for(let i in this.list)
-            {
-                let observation = this.list[i];
-                let heatingCooling = observation.heatingCoolingOn;
-                
-                if(heatingCooling)
-                {
-                    bucket["On"].addObservation(observation);
-                }
-                else
-                {
-                    bucket["Off"].addObservation(observation);
-                }
-            }
-        }
-        else if(type === "lights")
-        {    
-            bucket["On"] = new RoomUsageList();
-            bucket["Off"] = new RoomUsageList();
-                
-            for(let i in this.list)
-            {
-                let observation = this.list[i];
-                let lights = observation.lightsOn;
-                
-                if(lights)
-                {
-                    bucket["On"].addObservation(observation);
-                }
-                else
-                {
-                    bucket["Off"].addObservation(observation);
-                }
             }
         }
         
@@ -374,49 +324,27 @@ function getTime(time,type)
     
     switch(type)
     {   
-        case "month":
+        case "monthName":
             return monthNames[month];
+            
+        case "month":
+            return month;
             
         case "date":
             return date;
             
         case "hours":
-            if(hours>12)
-            {
-                hours -= 12;
-            }
-            
+            hours > 12 ? hours -= 12 : "";
             hours = hours.toString();
-            
-            if(hours.length === 1)
-            {
-                return "0" + hours;
-            }
-            else
-            {
-                return hours;
-            }
-           
+            hours = hours.length === 1 ? "0" + hours : hours;
+            return hours;
                 
         case "minutes":
-            if(minutes.length === 1)
-            {
-                return "0" + minutes;
-            }
-            else
-            {
-                return minutes;
-            }
+            minutes = minutes.length === 1 ? "0" + minutes : minutes;
             
         case "seconds":
-            if(seconds.length === 1)
-            {
-                return "0" + seconds;
-            }
-            else
-            {
-                return seconds;
-            }
+            seconds = seconds.length === 1 ? "0" + seconds : seconds;
+            return seconds;
     }
 }
 

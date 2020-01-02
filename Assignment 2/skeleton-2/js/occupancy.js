@@ -15,7 +15,7 @@ for(let i in bucket)
     
     listHTML += "<div class='mdl-cell mdl-cell--4-col'><table class='mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h5>Worst occupancy for " + title + "</h5></th></tr></thead><tbody>";
     
-    let numberOfRooms = currentList.length>=5 ? 5 : currentList.length;
+    let numberOfRooms = currentList.length >= 5 ? 5 : currentList.length;
     
     for(let j=0; j<numberOfRooms; j++)
     {
