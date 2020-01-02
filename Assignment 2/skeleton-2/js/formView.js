@@ -46,10 +46,10 @@ function clearForm()
 
     errorMessagesRef.innerHTML = "";
     
-    var snackbarContainer = document.querySelector('#toast');
-    var showSnackbarButton = document.querySelector('#clearButton');
+    let snackbarContainer = document.querySelector('#toast');
+    let showSnackbarButton = document.querySelector('#clearButton');
     
-    var data = 
+    let data = 
     {
       message: 'Cleared.',
       timeout: 4000,

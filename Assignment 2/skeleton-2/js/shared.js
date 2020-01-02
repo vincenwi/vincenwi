@@ -119,6 +119,11 @@ class RoomUsageList
         return this._roomList;
     }
     
+    set list(newList)
+    {
+        this._roomList = newList;
+    }
+    
     addObservation(newObservation) 
     {   
         let errorMessagesRef = document.getElementById("errorMessages");
@@ -149,7 +154,6 @@ class RoomUsageList
     
     checkExistence(newObservation)
     {
-        
         // check over Object.keys for "for...in" section
         
         let observationExists = false;
@@ -188,6 +192,8 @@ class RoomUsageList
     
     initialiseFromListPDO(listFromStorage)
     {
+        this.clearObservations();
+        
         for(let i=0; i<listFromStorage._roomList.length; i++)
         {
             
@@ -279,7 +285,6 @@ class RoomUsageList
                 }
                 
                 bucket[address].addObservation(observation);
-                
             }
         }
         else if(type === "ac")
@@ -323,10 +328,6 @@ class RoomUsageList
             }
         }
         
-//        return bucket[aggKey];
-        delete bucket._roomList;
-        delete bucket._numberOfObservations;
-        
         return bucket;
     }
     
@@ -336,8 +337,8 @@ class RoomUsageList
     }
 }
 
-var key = "ENG1003-RoomUseList";
-var roomUsageList;
+let key = "ENG1003-RoomUseList";
+let roomUsageList;
 
 window.onload = retrieveList();
 
@@ -359,13 +360,6 @@ function retrieveList()
         }
     }
     roomUsageList.sortByDate();
-//    storeList() 
-}
-
-function deleteObservationAtIndex(index)
-{   
-    roomUsageList.removeObservation(index);
-    document.getElementById("observation" + index).remove()
 }
 
 function getTime(time,type)
@@ -450,16 +444,19 @@ function displayError()
 
 function getRoad(address)
 {
-    for(let i=0; i<address.length; i++) 
-        {
-            if(address[i] === ",") 
+    if(address)
+    {
+        for(let i=0; i<address.length; i++) 
             {
-                var commaIndex = i;
-                break;
+                if(address[i] === ",") 
+                {
+                    var commaIndex = i;
+                    break;
+                }
             }
-        }
 
-    return address.slice(0,commaIndex);
+        return address.slice(0,commaIndex);
+    }
 }
 
 window.onbeforeunload = storeList;
@@ -474,6 +471,8 @@ function storeList()
             roomUsageList._roomList.splice(blankIndex,1);
         }
     }
+    
+    roomUsageList.updateCounter();
     
     localStorage.setItem(key, JSON.stringify(roomUsageList));
 }

@@ -68,3 +68,52 @@ function createElements(roomUsageList)
     body.innerHTML = listHTML;
 }
 
+function deleteObservationAtIndex(index)
+{   
+    let tempList = new RoomUsageList();
+    
+    let toastRef = document.getElementById("toast");
+    
+//    for(let i in roomUsageList.list)
+//    {
+//        tempList.addObservation(roomUsageList.list[i]);
+//    }
+    
+    tempList.initialiseFromListPDO(roomUsageList);
+    
+//    console.log(tempList)
+    
+    roomUsageList.removeObservation(index);
+    document.getElementById("observation" + index).remove();
+    
+    let snackbarContainer = document.querySelector('#toast');
+    let showSnackbarButton = document.querySelector('#clearButton');
+        
+    let data = 
+    {
+        message: 'Deleted.',
+        timeout: 4000,
+        actionHandler: undo,
+        actionText: 'Undo'
+    };
+    
+    function undo() 
+    {
+//        roomUsageList = tempList;
+        roomUsageList.initialiseFromListPDO(tempList);
+        createElements(tempList);
+        toastRef.MaterialSnackbar.cleanup_();
+    }
+    
+    if(toastRef.MaterialSnackbar.active === true)
+    {
+        console.log("a")
+        toastRef.MaterialSnackbar.cleanup_();
+
+    }
+    
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    
+    
+    storeList();
+}
