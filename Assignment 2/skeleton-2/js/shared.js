@@ -1,5 +1,7 @@
 "use strict";
 
+let snackbarTimeout;
+
 class RoomUsage
 {
     constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal) 
@@ -209,28 +211,12 @@ class RoomUsageList
     
     sortByDate()
     {
-        let sorted = new Array();
-        
-        for(let observation in this._roomList)
-        {
-            sorted.push([observation,this._roomList[observation],this._roomList[observation]._timeChecked])
-        }
-        
-        sorted.sort((a,b) => b[2]-a[2]);
-        
-        let sortedList = new RoomUsageList();
-        
-        for(let observation in this._roomList)
-        {   
-            sortedList.addObservation(sorted[observation][1]);
-        }
-
-        this._roomList = sortedList._roomList
+        this.list.sort((a,b) => b.timeChecked - a.timeChecked)
     } 
     
     removeObservation(index)
     {
-        this._roomList[index] = "";
+        this.list[index] = "deleted";
         this.updateCounter();
     }
     
@@ -251,18 +237,18 @@ class RoomUsageList
                 let hourStr = currentHour > 12 ? currentHour - 12 : currentHour;
                 hourStr += amPm(currentHour);
                 
-                bucket.hasOwnProperty(hourStr) === false ? bucket[hourStr] = new RoomUsageList() : "";
-                
                 for(let i in this.list)
                 {
                     let observation = this.list[i];
                     let time = observation.timeChecked;
                     let hour = time.getHours();
                     
-                    currentHour === hour ? bucket[hourStr].addObservation(observation) : "";
+                    if(currentHour === hour)
+                    {
+                        bucket.hasOwnProperty(hourStr) === false ? bucket[hourStr] = new RoomUsageList() : "";
+                        bucket[hourStr].addObservation(observation);
+                    }
                 }
-                
-                bucket[hourStr]._numberOfObservations === 0 ? delete bucket[hourStr] : "";
             }
         }
         else if(type === "building")
@@ -290,7 +276,8 @@ class RoomUsageList
 let key = "ENG1003-RoomUseList";
 let roomUsageList;
 
-window.onload = retrieveList();
+//window.onload = retrieveList();
+retrieveList();
 
 function retrieveList()
 {
@@ -309,6 +296,7 @@ function retrieveList()
             console.log("Error: localStorage is not supported by current browser.");
         }
     }
+    
     roomUsageList.sortByDate();
 }
 
@@ -350,20 +338,11 @@ function getTime(time,type)
 
 function amPm(hour)
 {
-    if(hour<12 || hour===24)
-    {
-        return "am";
-    }
-    else
-    {
-        return "pm";
-    }
+    return hour<12 || hour===24 ? "am" : "pm";
 }
 
 // displays incorrect inputs because each roomUsage from JSON file is passed through the setters which has the if statements to check the validity of the values being inputted. 
 //Posible fix: delete invalid observations from the localstorage
-
-
 
 function displayError()
 {
@@ -391,13 +370,12 @@ window.onbeforeunload = storeList;
 
 function storeList()
 {
-    for(let observation in roomUsageList._roomList)
+    let deletedIndex;
+    
+    while(deletedIndex !== -1)
     {
-        let blankIndex = roomUsageList._roomList.indexOf(""); // returns -1 if "" cannot be found
-        if(blankIndex !== -1) 
-        {
-            roomUsageList._roomList.splice(blankIndex,1);
-        }
+        deletedIndex = roomUsageList.list.indexOf("deleted"); // returns -1 if "deleted" cannot be found
+        deletedIndex !== -1 ? roomUsageList.list.splice(deletedIndex,1) : "";
     }
     
     roomUsageList.updateCounter();

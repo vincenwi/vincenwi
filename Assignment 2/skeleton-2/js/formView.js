@@ -128,7 +128,6 @@ document.getElementById("useAddress").addEventListener("click",function(){
     }
 })
 
-
 function displayElementsWithClass(className, display)
 {
     var elements = document.getElementsByClassName(className);
@@ -173,19 +172,19 @@ function errorHandler(error)
 {
     if (error.code == 1)
     {
-        alert("Location access denied by user.");
+        displayMessage("Location access denied by user.");
     }
     else if (error.code == 2)
     {
-        alert("Location unavailable.");
+        displayMessage("Location unavailable.");
     }
     else if (error.code == 3)
     {
-        alert("Location access timed out");
+        displayMessage("Location access timed out");
     }
     else
     {
-        alert("Unknown error getting location.");
+        displayMessage("Unknown error getting location.");
     }
     
     addressClassRef.MaterialTextfield.enable();
@@ -195,19 +194,23 @@ function errorHandler(error)
 function showCurrentLocation(position)
 {
     // Demonstrate the current latitude and longitude:
-//    latitude = Number(position.coords.latitude);
-//    longitude = Number(position.coords.longitude);
-        latitude = 0; longitude = 0;
+    latitude = Number(position.coords.latitude);
+    longitude = Number(position.coords.longitude);
+//    latitude = -37.806402; longitude = 144.961947;
 
     let accuracy = Number(position.coords.accuracy).toFixed(2);
-
-    getAddress();
+    
+    if(ranOnce === false)
+    {
+        console.log("a")
+        true ? getAddress() : displayMessage("Cannot determine your address accurately, please enter the address manually.", 4000);
+        ranOnce = true;
+    }
 }
 
 function getAddress()
 {
     var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
-
     var api_url = 'https://api.opencagedata.com/geocode/v1/json'
 
     var request_url = api_url
@@ -227,50 +230,43 @@ function getAddress()
     {
         // see full list of possible response codes:
         // https://opencagedata.com/api#codes
-        if(ranOnce)
-        {
-            if (request.status === 200)
-            { 
-                // Success!
-                var data = JSON.parse(request.responseText);
-
-                let road = data.results[0].components.road;
-                let footway = data.results[0].components.footway;
-                
-                console.log(data)
-
-                if(road)
-                {
-                    addressRef.value = road;
-                    updateTextfieldClasses();
-                }
-                else if(footway)
-                {
-                    addressRef.value = footway;
-                    updateTextfieldClasses();
-                }
-                else
-                {
-                    displayMessage("Unable to determine location, please enter your address manually.",5000)
-                }
-
-                addressClassRef.MaterialTextfield.enable();
-                useAddressClassRef.MaterialCheckbox.uncheck();
-            } 
-            else if (request.status <= 500)
-            { 
-                // We reached our target server, but it returned an error
-
-                console.log("unable to geocode! Response code: " + request.status);
-                var data = JSON.parse(request.responseText);
-            } 
-            else 
-            {
-                console.log("server error");
-            }
-        }
         
-        ranOnce = true;
+        if (request.status === 200)
+        { 
+            // Success!
+            var data = JSON.parse(request.responseText);
+
+            let road = data.results[0].components.road;
+            let footway = data.results[0].components.footway;
+            let accuracy = data.results[0].confidence;
+
+            if(road)
+            {
+                addressRef.value = road;
+            }
+            else if(footway)
+            {
+                addressRef.value = footway;
+            }
+            else
+            {
+                displayMessage("Unable to determine location, please enter your address manually.", 5000)
+            }
+
+            updateTextfieldClasses();
+            addressClassRef.MaterialTextfield.enable();
+        } 
+        else if (request.status <= 500)
+        { 
+            // We reached our target server, but it returned an error
+
+            console.log("unable to geocode! Response code: " + request.status);
+            var data = JSON.parse(request.responseText);
+        } 
+        else 
+        {
+            console.log("server error");
+        }
     };
 
     request.onerror = function() 
@@ -284,7 +280,6 @@ function getAddress()
    
     request.send();  // make the request
 }
-            
             
 function updateTextfieldClasses()
 {    
