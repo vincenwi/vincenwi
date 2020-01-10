@@ -1,23 +1,20 @@
 "use strict";
 
-let type = "building";
-let bucket = roomUsageList.aggregateBy(type);
+let bucket = roomUsageList.aggregateBy("building");
 
-let body = document.getElementById("content");
+let content = document.getElementById("content");
 let listHTML = "";
 
-for(let i in bucket)
+for(let address in bucket)
 {
     let wastefulCount = 0;
     let totalOccupancy = 0;
     let totalLightsOn = 0;
-    let totalHeatingCoolingOn = 0
+    let totalHeatingCoolingOn = 0;
     
-    let address = i;
+    let currentList = bucket[address].list;
     
-    let currentList = bucket[i].list;
-    
-    let numberOfObservations = bucket[i]._numberOfObservations;
+    let numberOfObservations = bucket[address]._numberOfObservations;
     
     for(let j in currentList)
     {

@@ -17,13 +17,13 @@ class RoomUsage
     
     initialiseFromRoomUsagePDO(roomUsage)
     {
-        this.roomNumber = roomUsage._roomNumber;
-        this.address = roomUsage._address;
-        this.lightsOn = roomUsage._lightsOn;
-        this.heatingCoolingOn = roomUsage._heatingCoolingOn;
-        this.seatsUsed = roomUsage._seatsUsed;
-        this.seatsTotal = roomUsage._seatsTotal;
-        this.timeChecked = roomUsage._timeChecked;
+        this._roomNumber = roomUsage._roomNumber;
+        this._address = getRoad(roomUsage._address);
+        this._lightsOn = roomUsage.lightsOn;
+        this._heatingCoolingOn = roomUsage._heatingCoolingOn;
+        this._seatsUsed = roomUsage._seatsUsed;
+        this._seatsTotal = roomUsage._seatsTotal;
+        this._timeChecked = new Date(roomUsage._timeChecked);
     }
     
     get roomNumber() 
@@ -31,19 +31,9 @@ class RoomUsage
         return this._roomNumber
     }
     
-    set roomNumber(newRoomNumber) 
-    {
-        this._roomNumber = newRoomNumber;
-    }
-    
     get address() 
     {
         return this._address;
-    }
-    
-    set address(newAddress) 
-    {
-        this._address = getRoad(newAddress);
     }
     
     get lightsOn() 
@@ -51,19 +41,9 @@ class RoomUsage
         return this._lightsOn;
     }
     
-    set lightsOn(newLightsOn) 
-    {
-        this._lightsOn = newLightsOn;
-    }
-    
     get heatingCoolingOn() 
     {
         return this._heatingCoolingOn;
-    }
-    
-    set heatingCoolingOn(newHeatingCoolingOn) 
-    {
-        this._heatingCoolingOn = newHeatingCoolingOn;
     }
     
     get seatsUsed() 
@@ -71,29 +51,14 @@ class RoomUsage
         return this._seatsUsed;
     }
     
-    set seatsUsed(newSeatsUsed) 
-    {
-        this._seatsUsed = newSeatsUsed;
-    }
-    
     get seatsTotal() 
     {
         return this._seatsTotal;
     }
     
-    set seatsTotal(newSeatsTotal) 
-    {
-        this._seatsTotal = newSeatsTotal;
-    }
-    
     get timeChecked() 
     {
         return this._timeChecked;
-    }
-    
-    set timeChecked(newTimeChecked)
-    {
-        this._timeChecked = new Date(newTimeChecked);
     }
     
     get occupancy()
@@ -276,8 +241,9 @@ class RoomUsageList
 let key = "ENG1003-RoomUseList";
 let roomUsageList;
 
-//window.onload = retrieveList();
 retrieveList();
+
+loadTestData();
 
 function retrieveList()
 {
@@ -382,4 +348,6 @@ function storeList()
     
     localStorage.setItem(key, JSON.stringify(roomUsageList));
 }
+
+
 

@@ -1,6 +1,6 @@
 "use strict";
 
-let body = document.getElementById("content");
+let content = document.getElementById("content");
 
 createElements(roomUsageList);
 
@@ -51,7 +51,7 @@ function createElements(roomUsageList)
         let address = observation._address;
         let roomNumber = observation._roomNumber;
         let seatUsage = `${observation._seatsUsed} / ${observation._seatsTotal}`;
-        let timeChecked = observation._timeChecked;
+        let timeChecked = observation.timeChecked;
         let date = `${getTime(timeChecked,"date")} ${getTime(timeChecked,"monthName")}`;
         let time = `${getTime(timeChecked,"hours")}:${getTime(timeChecked,"minutes")}:${getTime(timeChecked,"seconds")} ${amPm(timeChecked.getHours())}`;
         
@@ -81,7 +81,7 @@ function createElements(roomUsageList)
                     </div>`;
     }
     
-    body.innerHTML = listHTML;
+    content.innerHTML = listHTML;
 }
 
 function deleteObservationAtIndex(index)
