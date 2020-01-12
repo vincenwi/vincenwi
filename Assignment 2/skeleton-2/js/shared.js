@@ -243,8 +243,6 @@ let roomUsageList;
 
 retrieveList();
 
-loadTestData();
-
 function retrieveList()
 {
     roomUsageList = new RoomUsageList();
