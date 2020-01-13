@@ -32,6 +32,10 @@ td .mdl-textfield {
     color: #d50000;
 }
 
+.align_left {
+    text-align: left
+}
+
 .wasteful {
     background-color: #ffd4d4;    
 }

@@ -103,8 +103,8 @@ function saveForm()
                 roomUsageList.addObservation(newObservation);
                 
                 // find out if RoomUsageList class should be by address or something else
-                localStorage.setItem(key,JSON.stringify(roomUsageList));
-                
+                localStorage.setItem(STORAGE_KEY,JSON.stringify(roomUsageList));
+                console.log(newObservation)
                 return;
             }
         }    
