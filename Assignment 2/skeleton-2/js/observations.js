@@ -35,18 +35,9 @@ function createElements(roomUsageList)
     for(let index=0; index<roomUsageList._numberOfObservations; index++)
     {
         let observation = roomUsageList.list[index];
-        
-//        console.log(observation)
-        
-        if(observation === "")
-        {
-            continue;
-        }   
 
-        let lights, heatingCooling;
-
-        lights = observation.lightsOn === true ?  "On" : "Off";
-        heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
+        let lights = observation.lightsOn === true ?  "On" : "Off";
+        let heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
         
         let address = observation._address;
         let roomNumber = observation._roomNumber;

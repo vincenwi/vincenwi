@@ -19,7 +19,7 @@ class RoomUsage
     {
         this._roomNumber = roomUsage._roomNumber;
         this._address = getRoad(roomUsage._address);
-        this._lightsOn = roomUsage.lightsOn;
+        this._lightsOn = roomUsage._lightsOn;
         this._heatingCoolingOn = roomUsage._heatingCoolingOn;
         this._seatsUsed = roomUsage._seatsUsed;
         this._seatsTotal = roomUsage._seatsTotal;
@@ -86,84 +86,12 @@ class RoomUsageList
         return this._roomList;
     }
     
-    set list(newList)
-    {
-        this._roomList = newList;
-    }
-    
-    addObservation(newObservation) 
-    {   
-        let errorMessagesRef = document.getElementById("errorMessages");
-//        
-//        if(this.checkExistence(newObservation) === false)
-//        {
-//        console.log(this._roomList.length)
-//        console.log(observation)
-            this._roomList.push(newObservation);
-            this.updateCounter();
-            
-            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
-            {
-                errorMessagesRef.innerHTML = "";
-                displayMessage("You observation has been saved.")
-            }
-//        }
-//        else
-//        {
-//            if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
-//            {
-//                
-////                displayMessage("Observation already exists.");
-//                errorMessagesRef.innerHTML = "Observaiton already exists.";
-//            }
-//        }
-    }
-    
-    checkExistence(newObservation)
-    {
-        // check over Object.keys for "for...in" section
-        
-        let observationExists = false;
-        
-        for(let i=0; i<this._roomList.length && this._roomList.length>=1; i++)
-        {
-            let currentObservation = this._roomList[i];
-            for(var info in newObservation)
-            {
-                if(info !== "_timeChecked")
-                {
-                    if(currentObservation[info] === newObservation[info])
-                    {
-                        observationExists = true;
-                    }
-                    else
-                    {
-                        observationExists = false;
-                        break;
-                    }
-                }
-                else
-                {
-                    continue;   // skips _timeChecked 
-                }
-            }
-
-            if(observationExists) // if observation already exists in the list, it just stops checking
-            {
-                break;
-            }
-        }
-        
-        return observationExists;
-    }
-    
     initialiseFromListPDO(listFromStorage)
     {
         this.clearObservations();
         
         for(let i=0; i<listFromStorage._roomList.length; i++)
         {
-            
             let roomUsage = new RoomUsage();
             
             roomUsage.initialiseFromRoomUsagePDO(listFromStorage._roomList[i]);
@@ -172,12 +100,22 @@ class RoomUsageList
         }
         
         this.updateCounter();
-    } 
+    }
     
-    sortByDate()
-    {
-        this.list.sort((a,b) => b.timeChecked - a.timeChecked)
-    } 
+    addObservation(newObservation) 
+    {   
+        let errorMessagesRef = document.getElementById("errorMessages");
+        
+        this._roomList.push(newObservation);
+        this.updateCounter();
+
+        // Makes sure it only runs for index.html
+        if(document.querySelector(".mdl-layout-title").innerHTML === "New Room Observation")
+        {
+            errorMessagesRef.innerHTML = "";
+            displayMessage("Your observation has been saved.")
+        }
+    }
     
     removeObservation(index)
     {
@@ -229,6 +167,7 @@ class RoomUsageList
             }
         }
         
+        console.log(bucket)
         return bucket;
     }
     
@@ -236,9 +175,14 @@ class RoomUsageList
     {
         this._numberOfObservations = this._roomList.length;
     }
+    
+    sortByDate()
+    {
+        this.list.sort((a,b) => b.timeChecked - a.timeChecked);
+    } 
 }
 
-let key = "ENG1003-RoomUseList";
+let STORAGE_KEY = "ENG1003-RoomUseList";
 let roomUsageList;
 
 retrieveList();
@@ -247,11 +191,11 @@ function retrieveList()
 {
     roomUsageList = new RoomUsageList();
     
-    if(localStorage.getItem(key))
+    if(localStorage.getItem(STORAGE_KEY))
     {
         if(typeof(Storage) !== "undefined")
         {
-            let listFromStorage = JSON.parse(localStorage.getItem(key));
+            let listFromStorage = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
             roomUsageList.initialiseFromListPDO(listFromStorage);
         }
@@ -293,6 +237,7 @@ function getTime(time,type)
                 
         case "minutes":
             minutes = minutes.length === 1 ? "0" + minutes : minutes;
+            return minutes;
             
         case "seconds":
             seconds = seconds.length === 1 ? "0" + seconds : seconds;
@@ -305,14 +250,15 @@ function amPm(hour)
     return hour<12 || hour===24 ? "am" : "pm";
 }
 
-// displays incorrect inputs because each roomUsage from JSON file is passed through the setters which has the if statements to check the validity of the values being inputted. 
-//Posible fix: delete invalid observations from the localstorage
 
-function displayError()
-{
-    errorMessagesRef.innerHTML = "Incorrect inputs.";
-}
-
+/*
+ * getRoad(address)
+ *      Given that the address inputted has the building number and the road name before the first comma, this function looks for the position of the first *      comma and saves whatever is before that as the address
+ *
+ *      Parameter:
+ *          address: - data type: string
+ *                   - full version of the address e.g. 
+*/
 function getRoad(address)
 {
     if(address)
@@ -332,6 +278,10 @@ function getRoad(address)
 
 window.onbeforeunload = storeList;
 
+/*
+ * storeList()
+ *     This function stores the roomUsageList object to the local storage but before storing, it checks if any of the roomUsages stored in the list has been *     replaced with the string "deleted". If so, it removes the string and then stores the list once all of them have been removed.
+*/
 function storeList()
 {
     let deletedIndex;
@@ -344,8 +294,12 @@ function storeList()
     
     roomUsageList.updateCounter();
     
-    localStorage.setItem(key, JSON.stringify(roomUsageList));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(roomUsageList));
 }
 
 
+function displayError()
+{
+    errorMessagesRef.innerHTML = "Incorrect inputs.";
+}
 

@@ -1,6 +1,6 @@
 "use strict";
 
-let bucket = roomUsageList.aggregateBy("building");
+let bucket = roomUsageList.aggregateBy("time");
 
 let content = document.getElementById("content");
 let listHTML = "";
