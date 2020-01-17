@@ -47,6 +47,10 @@ function clearForm()
     
     let snackbarContainer = document.querySelector('#toast');
     let showSnackbarButton = document.querySelector('#clearButton');
+    if(snackbarContainer.MaterialSnackbar.active)
+    {
+        snackbarContainer.MaterialSnackbar.cleanup_();
+    }
     
     let data = 
     {
@@ -101,6 +105,15 @@ function saveForm()
                 
                 // find out if RoomUsageList class should be by address or something else
                 localStorage.setItem(STORAGE_KEY,JSON.stringify(roomUsageList));
+                
+                let snackbarContainer = document.querySelector('#toast');
+                if(snackbarContainer.MaterialSnackbar.active)
+                {
+                    snackbarContainer.MaterialSnackbar.cleanup_();
+                }           
+                
+                errorMessagesRef.innerHTML = "";
+                displayMessage("Your observation has been saved.")
                 return;
             }
         }    
@@ -112,7 +125,8 @@ function saveForm()
 
 // Geolocation
 
-document.getElementById("useAddress").addEventListener("click",function(){
+document.getElementById("useAddress").addEventListener("click",function()
+{
     if(this.checked)
     {
         ranOnce = false;

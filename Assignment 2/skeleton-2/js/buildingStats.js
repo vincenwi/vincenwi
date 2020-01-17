@@ -50,7 +50,7 @@ for(let address in bucket)
                                 </th></tr>
                             </thead>
                             <tbody>
-                                <tr><td class="mdl-data-table__cell--non-numeric color="#ffd4d4">
+                                <tr><td class="mdl-data-table__cell--non-numeric ${wasteful}">
                                     Observations: ${numberOfObservations}<br />
                                     Wasteful observations: ${wastefulCount}<br />
                                     Average seat utilisation: ${averageOccupancy}%<br />

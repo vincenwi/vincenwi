@@ -76,11 +76,17 @@ function createElements(roomUsageList)
 
 function deleteObservationAtIndex(index)
 {
+    let toastRef = document.getElementById("toast");
+    
     roomUsageList.removeObservation(index);
     document.getElementById(`observation${index}`).remove();
-    document.getElementById("toast").MaterialSnackbar.cleanup_();
     
-    displayMessage("Deleted.")
+    if(toastRef.MaterialSnackbar.active)
+    {
+        toastRef.MaterialSnackbar.cleanup_();
+    }
+    
+    displayMessage("Deleted.",5000)
 }
 
 
