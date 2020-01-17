@@ -5,11 +5,9 @@ let bucket = roomUsageList.aggregateBy("time");
 let content = document.getElementById("content");
 let listHTML = "";
 
-for(let i in bucket)
-{
-    let time = i;
-    
-    let currentList = bucket[i].list;
+for(let time in bucket)
+{   
+    let currentList = bucket[time].list;
     currentList.sort((a,b) => a.occupancy - b.occupancy);
     
     listHTML += `<div class="mdl-cell mdl-cell--4-col">
@@ -19,39 +17,33 @@ for(let i in bucket)
                                     <h5>Worst occupancy for ${time}</h5>
                                 </th></tr>
                             </thead>`
-        
-//        "<div class='mdl-cell mdl-cell--4-col'><table class='mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h5>Worst occupancy for " + title + "</h5></th></tr></thead><tbody>";
     
     let numberOfRoomsToDisplay = currentList.length >= 5 ? 5 : currentList.length;
     
-    for(let j=0; j<numberOfRoomsToDisplay; j++)
+    for(let i=0; i<numberOfRoomsToDisplay; i++)
     {
-        let observation = bucket[i].list[j];
+        let observation = bucket[time].list[i];
         let address = observation.address;
         let roomNumber = observation.roomNumber;
-        let seatsUsed = observation.seatsUsed;
-        let seatsTotal = observation.seatsTotal;
-        let occupancy = Math.round(seatsUsed/seatsTotal*10)/10;
+        let occupancy = Math.round(observation.occupancy*10)/10;
         occupancy % 1 === 0 ? occupancy += ".0" : "";
         let heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
         let lights = observation.lightsOn === true ? "On" : "Off";
         let timeChecked = observation.timeChecked;
 
-        let date = timeChecked.getDate();
-        let month = timeChecked.getMonth();
-        date = date.toString().length === 1 ? "0" + date : date;
-        month = month.toString().length === 1 ? "0" + month : month;
-        let fullDate = `${date}/${month}/${timeChecked.getFullYear()}`
-        let time = `${getTime(timeChecked,"hours")}:${getTime(timeChecked,"minutes")}:${getTime(timeChecked,"seconds")} ${amPm(timeChecked.getHours())}`;
+        let date = getTime(timeChecked,"date");
+        let month = getTime(timeChecked,"month");
+        let fullDate = getTime(timeChecked,"fullDate");
+        let fullTime = getTime(timeChecked,"fullTime");
         
         listHTML += `<tbody>
                             <tr><td class="mdl-data-table__cell--non-numeric">
-                                <div><b>${address}; Rm ${roomNumber}</b></div>
+                                <div><b>${address} - Rm ${roomNumber}</b></div>
                                 <div>Occupancy: ${occupancy}%</div>
                                 <div>Heating/cooling: ${heatingCooling}</div>
                                 <div>Lights: ${lights}</div>
                                 <div><font color="grey">
-                                        <i>${fullDate}, ${time}</i>
+                                    <i>${fullDate}, ${fullTime}</i>
                                 </font></div>
                             </td></tr>`
     }

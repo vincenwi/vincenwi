@@ -1,24 +1,24 @@
 "use strict";
 
-var textFieldIDs = ["address", "roomNumber", "seatsUsed", "seatsTotal"];
+let textFieldIDs = ["address", "roomNumber", "seatsUsed", "seatsTotal"];
 
-var addressRef = document.getElementById("address");
-var useAddressRef = document.getElementById("useAddress");
-var roomNumberRef = document.getElementById("roomNumber");
-var seatsUsedRef = document.getElementById("seatsUsed");
-var seatsTotalRef = document.getElementById("seatsTotal");
+let addressRef = document.getElementById("address");
+let useAddressRef = document.getElementById("useAddress");
+let roomNumberRef = document.getElementById("roomNumber");
+let seatsUsedRef = document.getElementById("seatsUsed");
+let seatsTotalRef = document.getElementById("seatsTotal");
 
-var addressClassRef = document.getElementsByClassName("mdl-textfield")[0];
-var useAddressClassRef = document.getElementsByClassName("mdl-checkbox")[0];
-var roomNumberClassRef = document.getElementsByClassName("mdl-textfield")[1];
-var lightsClassRef = document.getElementsByClassName("mdl-switch")[0];
-var heatingCoolingClassRef = document.getElementsByClassName("mdl-switch")[1];
-var seatsUsedClassRef = document.getElementsByClassName("mdl-textfield")[2];
-var seatsTotalClassRef = document.getElementsByClassName("mdl-textfield")[3];
+let addressClassRef = document.getElementsByClassName("mdl-textfield")[0];
+let useAddressClassRef = document.getElementsByClassName("mdl-checkbox")[0];
+let roomNumberClassRef = document.getElementsByClassName("mdl-textfield")[1];
+let lightsClassRef = document.getElementsByClassName("mdl-switch")[0];
+let heatingCoolingClassRef = document.getElementsByClassName("mdl-switch")[1];
+let seatsUsedClassRef = document.getElementsByClassName("mdl-textfield")[2];
+let seatsTotalClassRef = document.getElementsByClassName("mdl-textfield")[3];
 
-var address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, heatingCoolingOn;
+let address, roomNumber, seatsUsed, seatsTotal, ranOnce, useAddress, lightsOn, heatingCoolingOn;
 
-var longitude,latitude;
+let longitude,latitude;
 
 let errorMessagesRef = document.getElementById("errorMessages");
 
@@ -39,7 +39,6 @@ function clearForm()
     seatsUsedRef.value = "";
     seatsTotalRef.value = "";
     updateTextfieldClasses();
-    
     lightsClassRef.MaterialSwitch.off();
     heatingCoolingClassRef.MaterialSwitch.off();
     useAddressClassRef.MaterialCheckbox.uncheck();
@@ -65,12 +64,10 @@ function clearForm()
         roomNumberRef.value = roomNumber;
         seatsUsedRef.value = seatsUsed;
         seatsTotalRef.value = seatsTotal;
-        
         updateTextfieldClasses();
-        
         useAddress ? useAddressClassRef.MaterialCheckbox.check() : "";
         lightsOn ? lightsClassRef.MaterialSwitch.on() : "";
-        heatingCoolingOn ? heatingCoolingClassRef.MaterialSwitch.on() : "";        
+        heatingCoolingOn ? heatingCoolingClassRef.MaterialSwitch.on() : "";  
     }
 }
 
@@ -104,7 +101,6 @@ function saveForm()
                 
                 // find out if RoomUsageList class should be by address or something else
                 localStorage.setItem(STORAGE_KEY,JSON.stringify(roomUsageList));
-                console.log(newObservation)
                 return;
             }
         }    
@@ -130,9 +126,9 @@ document.getElementById("useAddress").addEventListener("click",function(){
 
 function displayElementsWithClass(className, display)
 {
-    var elements = document.getElementsByClassName(className);
+    let elements = document.getElementsByClassName(className);
 
-    for (var i = 0; i < elements.length; i++)
+    for (let i = 0; i < elements.length; i++)
     {
         if (display)
         {
@@ -151,7 +147,7 @@ function displayElementsWithClass(className, display)
 
 function getPosition()
 {
-    if (navigator.geolocation)
+    if (navigator.geolocation && !ranOnce)
     {
         let positionOptions = {
             enableHighAccuracy: true,
@@ -197,12 +193,9 @@ function showCurrentLocation(position)
     latitude = Number(position.coords.latitude);
     longitude = Number(position.coords.longitude);
 //    latitude = -37.806402; longitude = 144.961947;
-
-    let accuracy = Number(position.coords.accuracy).toFixed(2);
     
     if(ranOnce === false)
     {
-        console.log("a")
         true ? getAddress() : displayMessage("Cannot determine your address accurately, please enter the address manually.", 4000);
         ranOnce = true;
     }
@@ -210,10 +203,10 @@ function showCurrentLocation(position)
 
 function getAddress()
 {
-    var apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
-    var api_url = 'https://api.opencagedata.com/geocode/v1/json'
+    let apikey = 'c8b580297e194d9dbac4e5ecf4fe8c5d';
+    let api_url = 'https://api.opencagedata.com/geocode/v1/json'
 
-    var request_url = api_url
+    let request_url = api_url
     + '?'
     + 'key=' + apikey
     + '&q=' + encodeURIComponent(latitude + ',' + longitude)
@@ -223,7 +216,7 @@ function getAddress()
     // see full list of required and optional parameters:
     // https://opencagedata.com/api#forward
 
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open('GET', request_url, true);
     
     request.onload = function() 
@@ -234,23 +227,30 @@ function getAddress()
         if (request.status === 200)
         { 
             // Success!
-            var data = JSON.parse(request.responseText);
+            let data = JSON.parse(request.responseText);
 
             let road = data.results[0].components.road;
             let footway = data.results[0].components.footway;
             let accuracy = data.results[0].confidence;
 
-            if(road)
+            if(accuracy >= 8)
             {
-                addressRef.value = road;
-            }
-            else if(footway)
-            {
-                addressRef.value = footway;
+                if(road)
+                {
+                    addressRef.value = road;
+                }
+                else if(footway)
+                {
+                    addressRef.value = footway;
+                }
+                else
+                {
+                    displayMessage("Unable to determine location, please enter your address manually.", 5000)
+                }
             }
             else
             {
-                displayMessage("Unable to determine location, please enter your address manually.", 5000)
+                displayMessage("Cannot determine your address accurately, please enter the address manually.", 5000);
             }
 
             updateTextfieldClasses();
@@ -261,7 +261,7 @@ function getAddress()
             // We reached our target server, but it returned an error
 
             console.log("unable to geocode! Response code: " + request.status);
-            var data = JSON.parse(request.responseText);
+            let data = JSON.parse(request.responseText);
         } 
         else 
         {

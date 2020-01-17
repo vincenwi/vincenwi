@@ -4,20 +4,20 @@ let content = document.getElementById("content");
 
 createElements(roomUsageList);
 
-function searchFor()
+function searchFor(input)
 {
     let searchList = new RoomUsageList();
-    body.innerHTML = "";
+    content.innerHTML = "";
     
-    let input = document.getElementById("searchField").value.toLowerCase();
+//    let input = document.getElementById("searchField").value.toLowerCase();
     
     if(input.trim().length !== 0)
     {
-        for(let observation in roomUsageList._roomList)
+        for(let observation in roomUsageList.list)
         {
-            let searchResultIndex = roomUsageList._roomList[observation].toString().toLowerCase().indexOf(input);
+            let searchResultIndex = roomUsageList.list[observation].toString().toLowerCase().indexOf(input.trim().toLowerCase());
 
-            searchResultIndex !== -1 ? searchList.addObservation(roomUsageList._roomList[observation]) : "";
+            searchResultIndex !== -1 ? searchList.addObservation(roomUsageList.list[observation]) : "";
         }
     }
     else
@@ -32,21 +32,20 @@ function createElements(roomUsageList)
 {
     let listHTML = "";
 
-    for(let index=0; index<roomUsageList._numberOfObservations; index++)
+    for(let roomUsage in roomUsageList.list)
     {
-        let observation = roomUsageList.list[index];
+        let observation = roomUsageList.list[roomUsage];
 
+        let address = observation.address;
+        let roomNumber = observation.roomNumber;
+        let seatUsage = `${observation.seatsUsed} / ${observation.seatsTotal}`;
         let lights = observation.lightsOn === true ?  "On" : "Off";
         let heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
-        
-        let address = observation._address;
-        let roomNumber = observation._roomNumber;
-        let seatUsage = `${observation._seatsUsed} / ${observation._seatsTotal}`;
         let timeChecked = observation.timeChecked;
         let date = `${getTime(timeChecked,"date")} ${getTime(timeChecked,"monthName")}`;
-        let time = `${getTime(timeChecked,"hours")}:${getTime(timeChecked,"minutes")}:${getTime(timeChecked,"seconds")} ${amPm(timeChecked.getHours())}`;
+        let time = getTime(timeChecked,"fullTime");
         
-        listHTML += `<div class="mdl-cell mdl-cell--4-col" id=observation${index}>
+        listHTML += `<div class="mdl-cell mdl-cell--4-col" id=observation${roomUsage}>
                         <table class="observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>
                                 <tr><th class="mdl-data-table__cell--non-numeric">
@@ -63,7 +62,7 @@ function createElements(roomUsageList)
                                     Lights: ${lights}<br />
                                     Heating/cooling: ${heatingCooling}<br />
                                     Seat usage: ${seatUsage}<br/ >
-                                    <button class="mdl-button mdl-js-button mdl-button--icon" onclick="deleteObservationAtIndex(${index});">
+                                    <button class="mdl-button mdl-js-button mdl-button--icon" onclick="deleteObservationAtIndex(${roomUsage});">
                                         <i class="material-icons">delete</i>
                                     </button>
                                 </td></tr>
@@ -79,6 +78,9 @@ function deleteObservationAtIndex(index)
 {
     roomUsageList.removeObservation(index);
     document.getElementById(`observation${index}`).remove();
+    document.getElementById("toast").MaterialSnackbar.cleanup_();
     
-    displayMessage("Deleted.");
+    displayMessage("Deleted.")
 }
+
+

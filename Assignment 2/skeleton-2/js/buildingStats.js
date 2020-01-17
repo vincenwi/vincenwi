@@ -16,9 +16,9 @@ for(let address in bucket)
     
     let numberOfObservations = bucket[address]._numberOfObservations;
     
-    for(let j in currentList)
+    for(let roomUsage in currentList)
     {
-        let observation = currentList[j];
+        let observation = currentList[roomUsage];
         
         let occupancy = observation.occupancy;
         let lightsOn = observation.lightsOn;
@@ -38,18 +38,7 @@ for(let address in bucket)
     
     averageOccupancy % 1 === 0 ? averageOccupancy += ".0" : "";
     averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";
-    averageHeatingCoolingUsage % 1 === 0 ? averageHeatingCoolingUsage += ".0" : "";
-//
-//    listHTML += "<div class='mdl-cell mdl-cell--4-col'><table id='building' class='observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp' data-upgraded=',MaterialDataTable'><thead><tr><th class='mdl-data-table__cell--non-numeric'><h4>";
-//    listHTML += address + "</h4></th></tr></thead><tbody><tr><td class='mdl-data-table__cell--non-numeric ";
-//    listHTML += wastefulCount !== 0 ? "wasteful" : ""; // highlights the buildings that have wasteful observations
-//    listHTML += "'> Observations: " + numberOfObservations + "<br>";
-//    listHTML += "Wasteful observations: " + wastefulCount + "<br>";
-//    listHTML += "Average seat utilisation: " + averageOccupancy + "%<br>";
-//    listHTML += "Average lights utilisation: " + averageLightsUsage + "%<br>";
-//    listHTML += "Average heating/cooling utilisation: " + averageHeatingCoolingUsage +"% </td></tr></tbody></table></div>";
-//    
-//    
+    averageHeatingCoolingUsage % 1 === 0 ? averageHeatingCoolingUsage += ".0" : "";  
     
     listHTML += `<div class="mdl-cell mdl-cell--4-col">
                         <table class="observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -61,7 +50,7 @@ for(let address in bucket)
                                 </th></tr>
                             </thead>
                             <tbody>
-                                <tr><td class="mdl-data-table__cell--non-numeric ${wasteful}">
+                                <tr><td class="mdl-data-table__cell--non-numeric color="#ffd4d4">
                                     Observations: ${numberOfObservations}<br />
                                     Wasteful observations: ${wastefulCount}<br />
                                     Average seat utilisation: ${averageOccupancy}%<br />
