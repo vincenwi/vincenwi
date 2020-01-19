@@ -1,21 +1,18 @@
 "use strict";
 
-let bucket = roomUsageList.aggregateBy("building");
-
+let bucket = roomUsageList.aggregateBy("building"); // Retrieves the bucket of observations aggregated by building address
 let content = document.getElementById("content");
 let listHTML = "";
 
+// Iterates through all building addresses which holds the observations of the rooms in the buildings
 for(let address in bucket)
 {
-    let wastefulCount = 0;
-    let totalOccupancy = 0;
-    let totalLightsOn = 0;
-    let totalHeatingCoolingOn = 0;
-    
     let currentList = bucket[address].list;
     
+    let wastefulCount = 0, totalOccupancy = 0, totalLightsOn = 0, totalHeatingCoolingOn = 0;
     let numberOfObservations = bucket[address]._numberOfObservations;
     
+    // Iterates through all the observations made in the building
     for(let roomUsage in currentList)
     {
         let observation = currentList[roomUsage];
@@ -24,22 +21,21 @@ for(let address in bucket)
         let lightsOn = observation.lightsOn;
         let heatingCoolingOn = observation.heatingCoolingOn;
         
-        occupancy === 0 && (lightsOn === false || heatingCoolingOn === false) ? wastefulCount++ : "";
         totalOccupancy += occupancy;
+        occupancy === 0 && (lightsOn === false || heatingCoolingOn === false) ? wastefulCount++ : "";
         lightsOn === true ? totalLightsOn++ : "";
         heatingCoolingOn === true ? totalHeatingCoolingOn++ : "";
     }
     
-    let wasteful = wastefulCount !== 0 ? "wasteful" : "";
+    let wasteful = wastefulCount > 0 ? "wasteful" : "";
     
     let averageOccupancy = Math.round(totalOccupancy/numberOfObservations*10)/10;
     let averageLightsUsage = Math.round(totalLightsOn/numberOfObservations*100*10)/10;
     let averageHeatingCoolingUsage = Math.round(totalHeatingCoolingOn/numberOfObservations*100*10)/10;
-    
     averageOccupancy % 1 === 0 ? averageOccupancy += ".0" : "";
     averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";
-    averageHeatingCoolingUsage % 1 === 0 ? averageHeatingCoolingUsage += ".0" : "";  
     
+    // Creates the HTML elements using the information stored
     listHTML += `<div class="mdl-cell mdl-cell--4-col">
                         <table class="observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                             <thead>
@@ -63,3 +59,4 @@ for(let address in bucket)
 }
 
 content.innerHTML = listHTML;
+checkIfEmpty();

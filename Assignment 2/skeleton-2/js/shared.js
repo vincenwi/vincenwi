@@ -1,9 +1,8 @@
 "use strict";
 
-let snackbarTimeout;
-
 class RoomUsage
 {
+    // Takes in the information and creates a new observation (roomUsage) object.
     constructor(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal) 
     {
         this._roomNumber = roomNumber;
@@ -15,6 +14,9 @@ class RoomUsage
         this._timeChecked = new Date();
     }
     
+    // PUBLIC METHODS
+    
+    // Copies the information in a roomUsage to a new one so that the new one has the methods from this class.
     initialiseFromRoomUsagePDO(roomUsage)
     {
         this._roomNumber = roomUsage._roomNumber;
@@ -66,6 +68,7 @@ class RoomUsage
         return this._occupancy = this.seatsUsed === 0 && this.seatsTotal === 0 ? 0 : this.seatsUsed/this.seatsTotal*100;
     }
     
+    // To be used for the Searching feature.
     toString() 
     {
         return `Rm ${this.roomNumber}                   Room ${this.roomNumber}                     ${this.address}                   .`;
@@ -74,12 +77,15 @@ class RoomUsage
 
 class RoomUsageList 
 {
+    // Creates a new roomUsageList object with an array inside.
     constructor() 
     {
         this._roomList = [];
         this._numberOfObservations = 0;
         this.updateCounter();
     }
+    
+    // PUBLIC METHODS
     
     get list() 
     {
@@ -91,6 +97,7 @@ class RoomUsageList
         this._roomList = newList;
     }
     
+    // Copies all the roomUsage objects to a new list so that the new ones has the methods from this class.
     initialiseFromListPDO(listFromStorage)
     {
         this.clearObservations();
@@ -107,6 +114,7 @@ class RoomUsageList
         this.updateCounter();
     }
     
+    // Adds a new roomUsage object to the array in this list object.
     addObservation(newObservation) 
     {   
         let errorMessagesRef = document.getElementById("errorMessages");
@@ -122,18 +130,21 @@ class RoomUsageList
         }
     }
     
+    // Deletes a roomUsage object from the list
     removeObservation(index)
     {
         this.list[index] = "deleted";
-        this.updateCounter();
+        this._numberOfObservations--;
     }
     
+    // Deletes all observations from the list.
     clearObservations()
     {
         this.list = new Array();
         this.updateCounter();
     }
     
+    // Aggregates the observations into buckets in terms of time or building address.
     aggregateBy(type)
     {
         let bucket = new Object();
@@ -175,11 +186,13 @@ class RoomUsageList
         return bucket;
     }
     
+    // Updates the counter which shows how many observations there are in the list.
     updateCounter()
     {
         this._numberOfObservations = this.list.length;
     }
     
+    // Sorts the observations by time. Oldest at the bottom and latest at the top.
     sortByDate()
     {
         this.list.sort((a,b) => b.timeChecked - a.timeChecked);
@@ -187,22 +200,17 @@ class RoomUsageList
 }
 
 let STORAGE_KEY = "ENG1003-RoomUseList";
-let roomUsageList;
+let roomUsageList = new RoomUsageList();
 
 retrieveList();
 
-
 /*
  * retrieveList()
- *      Gets the stored roomUsageList object from the local storage and copies its content  instance
- *      to a new roomUsageList.
- *
- *
+ *      Gets the stored roomUsageList object from the local storage and runs the initialiseFromListPDO() method which copies its content
+ *      to the roomUsageList object.
 */
 function retrieveList()
-{
-    roomUsageList = new RoomUsageList();
-    
+{   
     if(localStorage.getItem(STORAGE_KEY))
     {
         if(typeof(Storage) !== "undefined")
@@ -221,7 +229,28 @@ function retrieveList()
 }
 
 /*
- *  getTime(time,type)
+ *  storeList()
+ *     This function stores the roomUsageList object to the local storage but before storing,
+ *     it checks if any of the roomUsages stored in the list has been replaced with the string "deleted". 
+ *     If so, it removes the string and then stores the list once all of them have been removed.
+*/
+function storeList()
+{
+    let deletedIndex;
+    
+    while(deletedIndex !== -1)
+    {
+        deletedIndex = roomUsageList.list.indexOf("deleted"); // returns -1 if "deleted" cannot be found
+        deletedIndex !== -1 ? roomUsageList.list.splice(deletedIndex,1) : "";
+    }
+    
+    roomUsageList.updateCounter();
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(roomUsageList));
+}
+
+/*
+ *  getTime(time, type)
  *      Takes in the time and date and returns which part of the time that is requested. This also makes
  *      sure that single digit hour or minute or second values do not display as a single digit.
  *
@@ -234,7 +263,7 @@ function retrieveList()
  *      Return value:
  *
 */
-function getTime(time,type)
+function getTime(time, type)
 {
     let month = time.getMonth() + 1;
     let date = time.getDate();
@@ -306,6 +335,10 @@ function amPm(hour)
  *      Parameter(s):
  *          address: - long version of the address e.g. 12 College Walk, Clayton VIC 3170, Australia
  *                   - data type: string
+ *
+ *      Return value:
+ *          Building address: - the main part of the address that is used
+ *                            - data type: string
 */
 function getRoad(address)
 {
@@ -315,32 +348,20 @@ function getRoad(address)
     }
 }
 
-window.onbeforeunload = storeList;
-
 /*
- *  storeList()
- *     This function stores the roomUsageList object to the local storage but before storing,
- *     it checks if any of the roomUsages stored in the list has been replaced with the string "deleted". 
- *     If so, it removes the string and then stores the list once all of them have been removed.
+ *  checkIfEmpty()
+ *      This checks the number of observations there are in the list. If there are none, the page will let the user know that there is nothing.
 */
-function storeList()
+function checkIfEmpty()
 {
-    let deletedIndex;
-    
-    while(deletedIndex !== -1)
+    if(roomUsageList._numberOfObservations === 0)
     {
-        deletedIndex = roomUsageList.list.indexOf("deleted"); // returns -1 if "deleted" cannot be found
-        deletedIndex !== -1 ? roomUsageList.list.splice(deletedIndex,1) : "";
+        content.innerHTML =  `<div class="mdl-cell mdl-cell--4-col">
+                <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                    <tbody>
+                        <tr><td class="mdl-data-table__cell--non-numeric">There are no observations.</td></tr>
+                    </tbody>
+                </table>
+            </div>`
     }
-    
-    roomUsageList.updateCounter();
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(roomUsageList));
 }
-
-
-function displayError()
-{
-    errorMessagesRef.innerHTML = "Incorrect inputs.";
-}
-
