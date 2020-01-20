@@ -35,6 +35,7 @@ for(let address in bucket)
     let averageHeatingCoolingUsage = Math.round(totalHeatingCoolingOn/numberOfObservations*100*10)/10;  // Gets average heater cooler in 1 decimal place format
     averageOccupancy % 1 === 0 ? averageOccupancy += ".0" : "";                         // Ensures it is in 1 decimal place format
     averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";                     // Ensures it is in 1 decimal place format
+    averageHeatingCoolingUsage % 1 === 0 ? averageHeatingCoolingUsage += ".0" : "";     // Ensures it is in 1 decimal place format
     
     // Creates the HTML elements using the information stored
     listHTML += `<div class="mdl-cell mdl-cell--4-col">
