@@ -17,7 +17,6 @@ let seatsTotalClassRef = document.getElementsByClassName("mdl-textfield")[3];
 let ranOnce = false;;
 
 let errorMessagesRef = document.getElementById("errorMessages");
-let toastRef = document.getElementById("toast");
 
 /*
  *  clearForm()
@@ -91,31 +90,28 @@ function saveForm()
             let newObservation = new RoomUsage(roomNumber, address, lightsOn, heatingCoolingOn, seatsUsed, seatsTotal)
             roomUsageList.addObservation(newObservation);
 
-            cleanUpToast();
-
             errorMessagesRef.innerHTML = "";
-            displayMessage("Your observation has been saved.")
             cleanUpToast();
+            displayMessage("Your observation has been saved.");
             
             storeList();
-            return;                                                         // Skips the part which displays the error since there's none.
+            return; // Skips the part which displays the error since there's none.
         }
     } 
     
     errorMessagesRef.innerHTML = "Incorrect inputs.";
 }
 
-
 // ======================================================================
 //   GPS sensor code (geolocation)
 // ======================================================================
-document.getElementById("useAddress").addEventListener("click",function()
+document.getElementById("useAddress").addEventListener("click", function()
 {
     if(this.checked)
     {   
-        getPosition();                                                      // executes the reverse geocoding code
+        getPosition();  // executes the reverse geocoding code
         
-        addressClassRef.MaterialTextfield.disable();                        // disables the adress textfield and the checkbox
+        addressClassRef.MaterialTextfield.disable();    // disables the adress textfield and the checkbox
         useAddressClassRef.MaterialCheckbox.disable();
     }
 })
@@ -311,14 +307,3 @@ function updateTextfieldClasses()
     seatsTotalClassRef.MaterialTextfield.updateClasses_();
 }
 
-/*
- *  cleanUpToast()
- *      If the toast is active when another one is prompted to appear, the one currently active will be closed.
-*/
-function cleanUpToast()
-{
-    if(toastRef.MaterialSnackbar.active)
-    {
-        toastRef.MaterialSnackbar.cleanup_();
-    } 
-}

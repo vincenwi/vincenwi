@@ -8,7 +8,7 @@ class RoomUsage
         this._roomNumber = roomNumber;
         this._address = address;
         this._lightsOn = lightsOn;
-        this._heatingCoolingOn = heatingCoolingOn
+        this._heatingCoolingOn = heatingCoolingOn;
         this._seatsUsed = seatsUsed;
         this._seatsTotal = seatsTotal;
         this._timeChecked = new Date();
@@ -26,11 +26,12 @@ class RoomUsage
         this._seatsUsed = roomUsage._seatsUsed;
         this._seatsTotal = roomUsage._seatsTotal;
         this._timeChecked = new Date(roomUsage._timeChecked);
+        this._actualIndex = roomUsage._actualIndex;     // for deleting observations when searching
     }
     
     get roomNumber() 
     {
-        return this._roomNumber
+        return this._roomNumber;
     }
     
     get address() 
@@ -131,7 +132,7 @@ class RoomUsageList
     }
     
     // Deletes a roomUsage object from the list
-    removeObservation(index)
+    removeObservationAtIndex(index)
     {
         this.list[index] = "deleted";
         this._numberOfObservations--;
@@ -153,19 +154,19 @@ class RoomUsageList
         {
             for(let currentHour=0; currentHour<24; currentHour++)
             {
-                let hourStr = currentHour > 12 ? currentHour - 12 : currentHour;
-                hourStr += amPm(currentHour);
+                let hourString = currentHour > 12 ? currentHour - 12 : currentHour;         // Gets the hour in 12 hour format e.g. 9pm
+                hourString += amPm(currentHour);
                 
                 for(let observation in this.list)
                 {
                     observation = this.list[observation];
                     let time = observation.timeChecked;
-                    let hour = time.getHours();
                     
-                    if(currentHour === hour)
+                    if(currentHour === time.getHours())
                     {
-                        bucket.hasOwnProperty(hourStr) === false ? bucket[hourStr] = new RoomUsageList() : "";
-                        bucket[hourStr].addObservation(observation);
+                        // Checks if property exists, if not, it creates one
+                        bucket.hasOwnProperty(hourString) === false ? bucket[hourString] = new RoomUsageList() : ""; 
+                        bucket[hourString].addObservation(observation);
                     }
                 }
             }
@@ -177,8 +178,8 @@ class RoomUsageList
                 observation = this.list[observation];
                 let address = observation.address;
                 
+                // Checks if property exists, if not, it creates one
                 bucket.hasOwnProperty(address) === false ? bucket[address] = new RoomUsageList() : "";
-                
                 bucket[address].addObservation(observation);
             }
         }
@@ -199,6 +200,7 @@ class RoomUsageList
     } 
 }
 
+let toastRef = document.getElementById("toast");
 let STORAGE_KEY = "ENG1003-RoomUseList";
 let roomUsageList = new RoomUsageList();
 
@@ -276,41 +278,41 @@ function getTime(time, type)
     switch(type)
     {   
         case "monthName":
-            return monthNames[month];
+            return monthNames[month];                                           // Returns the name of the month
             
         case "month":
-            return month + 1;
+            return month;                                                       // Adds a 1 because the numbers go from 0-11
             
         case "date":
             return date;
             
         case "fullDate":
-            date = date.toString().length === 1 ? "0" + date : date;
-            month = month.toString().length === 1 ? "0" + month : month;
-            return `${date}/${month}/${time.getFullYear()}`;
+            date = date.toString().length === 1 ? "0" + date : date;            // Ensures it displays in 2 digit format
+            month = month.toString().length === 1 ? "0" + month : month;        // Ensures it displays in 2 digit format
+            return `${date}/${month}/${time.getFullYear()}`;                    // Returns the date in the dd/mm/yyyy format
             
         case "hours":
             hours > 12 ? hours -= 12 : "";
             hours = hours.toString();
-            hours = hours.length === 1 ? "0" + hours : hours;
+            hours = hours.length === 1 ? "0" + hours : hours;                   // Ensures it displays in 2 digit and in 12 hour format
             return hours;
                 
         case "minutes":
-            minutes = minutes.length === 1 ? "0" + minutes : minutes;
+            minutes = minutes.length === 1 ? "0" + minutes : minutes;           // Ensures it displays in 2 digit format
             return minutes;
             
         case "seconds":
-            seconds = seconds.length === 1 ? "0" + seconds : seconds;
+            seconds = seconds.length === 1 ? "0" + seconds : seconds;           // Ensures it displays in 2 digit format
             return seconds;
             
-        case "fullTime":
-            return `${getTime(time,"hours")}:${getTime(time,"minutes")}:${getTime(time,"seconds")} ${amPm(time.getHours())}`;
+        case "fullTime":                                                        // Returns the time in hh:mm:ss am/pm format
+            return `${getTime(time,"hours")}:${getTime(time,"minutes")}:${getTime(time,"seconds")} ${amPm(time.getHours())}`; 
     }
 }
 
 /*
  *  amPm(hour)
- *      Determines whether the time is day or night. Takes in the hour which is in the 24-hour clock and returns
+ *      Determines whether the time is in the am or pm. Takes in the hour which is in the 24-hour clock format and returns
  *      either "am" or "pm" to be used in 12-hour clock
  *      
  *      Parameter(s):
@@ -352,7 +354,7 @@ function getRoad(address)
  *  checkIfEmpty()
  *      This checks the number of observations there are in the list. If there are none, the page will let the user know that there is nothing.
 */
-function checkIfEmpty()
+function checkIfEmpty(roomUsageList)
 {
     if(roomUsageList._numberOfObservations === 0)
     {
@@ -364,4 +366,16 @@ function checkIfEmpty()
                 </table>
             </div>`
     }
+}
+
+/*
+ *  cleanUpToast()
+ *      If the toast is active when another one is prompted to appear, the one currently active will be closed.
+*/
+function cleanUpToast()
+{
+    if(toastRef.MaterialSnackbar.active)
+    {
+        toastRef.MaterialSnackbar.cleanup_();
+    } 
 }

@@ -31,7 +31,7 @@ for(let time in bucket)
         let roomNumber = observation.roomNumber;
         
         let occupancy = Math.round(observation.occupancy*10)/10;
-        occupancy % 1 === 0 ? occupancy += ".0" : "";
+        occupancy % 1 === 0 ? occupancy += ".0" : "";                   // Ensures the number is in 1 decimal place format
         
         let heatingCooling = observation.heatingCoolingOn === true ? "On" : "Off";
         let lights = observation.lightsOn === true ? "On" : "Off";
@@ -57,4 +57,4 @@ for(let time in bucket)
 }
 
 content.innerHTML = listHTML;       // displays the HTML elements
-checkIfEmpty();
+checkIfEmpty(roomUsageList);

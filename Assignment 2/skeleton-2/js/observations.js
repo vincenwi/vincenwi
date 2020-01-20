@@ -1,8 +1,11 @@
 "use strict";
 
 let content = document.getElementById("content");
+let ranOnce = false;    // so that assigning actualIndexes only runs once
 
 createElements(roomUsageList); // Display the observations
+let searchList = new RoomUsageList();
+searchList.initialiseFromListPDO(roomUsageList);
 
 /*
  *  deleteObservationAtIndex(index)
@@ -15,19 +18,26 @@ createElements(roomUsageList); // Display the observations
  *                 - data type: number
 */
 function deleteObservationAtIndex(index)
-{
-    let toastRef = document.getElementById("toast");
+{   
+    let actualIndex;
     
-    roomUsageList.removeObservation(index);                  // replaces the observation to "deleted" which be deleted when stored
+    if(searchList._numberOfObservations === 0)  // if the searchList is empty then the actualIndex just takes the index from the delete button
+    {
+        actualIndex = index;
+    }
+    else
+    {
+        actualIndex = searchList._roomList[index]._actualIndex;
+        searchList.removeObservationAtIndex(index); // deletes the observation from searchList
+    }
+        
+    roomUsageList.removeObservationAtIndex(actualIndex);                  // replaces the observation to "deleted" which be deleted when stored
+    
     document.getElementById(`observation${index}`).remove(); // deletes the HTML elements
     
     // resets the toast if it is active
-    if(toastRef.MaterialSnackbar.active)
-    {
-        toastRef.MaterialSnackbar.cleanup_();
-    }
-    
-    checkIfEmpty();
+    cleanUpToast();
+    checkIfEmpty(searchList);
     
     displayMessage("Deleted.", 5000);
 }
@@ -44,7 +54,7 @@ function deleteObservationAtIndex(index)
 */
 function searchFor(input)
 {
-    let searchList = new RoomUsageList();
+    searchList.clearObservations();
     content.innerHTML = "";
     
     if(input.trim().length !== 0)
@@ -55,13 +65,13 @@ function searchFor(input)
 
             searchResultIndex !== -1 ? searchList.addObservation(roomUsageList.list[observation]) : "";
         }
+        
+        createElements(searchList);
     }
     else
     {
-        searchList = roomUsageList;
+        createElements(roomUsageList);
     }
-    
-    createElements(searchList);
 }
 
 /*
@@ -80,11 +90,13 @@ function createElements(roomUsageList)
     for(let roomUsage in roomUsageList.list)
     {   
         let observation = roomUsageList.list[roomUsage];
-
+        
         if(observation === "deleted")
         {
             continue;
         }
+        
+        ranOnce === false ? observation._actualIndex = roomUsage : "";
 
         let address = observation.address;
         let roomNumber = observation.roomNumber;
@@ -96,6 +108,8 @@ function createElements(roomUsageList)
         let timeChecked = observation.timeChecked;
         let date = `${getTime(timeChecked,"date")} ${getTime(timeChecked,"monthName")}`;
         let time = getTime(timeChecked,"fullTime");
+        
+        
 
         listHTML += `<div class="mdl-cell mdl-cell--4-col" id=observation${roomUsage}>
                         <table class="observation-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -124,9 +138,10 @@ function createElements(roomUsageList)
     }
     
     content.innerHTML = listHTML;
-    checkIfEmpty();
+    checkIfEmpty(roomUsageList);
+    
+    ranOnce = true;
 }
-
 
 /* Runs the storeList() function which stores the list to the local storage when the tab is closed or reloaded. */
 window.onbeforeunload = storeList;

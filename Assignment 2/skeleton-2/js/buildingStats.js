@@ -22,18 +22,19 @@ for(let address in bucket)
         let heatingCoolingOn = observation.heatingCoolingOn;
         
         totalOccupancy += occupancy;
-        occupancy === 0 && (lightsOn === false || heatingCoolingOn === false) ? wastefulCount++ : "";
-        lightsOn === true ? totalLightsOn++ : "";
-        heatingCoolingOn === true ? totalHeatingCoolingOn++ : "";
+        occupancy === 0 && (lightsOn === false || heatingCoolingOn === false) ? wastefulCount++ : "";   // Increments wastefulCount if observation is wasteful
+        lightsOn === true ? totalLightsOn++ : "";                           // Increments totalLightsOn if lights are on
+        heatingCoolingOn === true ? totalHeatingCoolingOn++ : "";           // Increments totalHeatingCoolingOn if heater/cooler is on
     }
     
-    let wasteful = wastefulCount > 0 ? "wasteful" : "";
+    let wasteful = wastefulCount > 0 ? "wasteful" : ""; // Checks if there are wasteful observations, if so then the building will be highlighted
     
-    let averageOccupancy = Math.round(totalOccupancy/numberOfObservations*10)/10;
-    let averageLightsUsage = Math.round(totalLightsOn/numberOfObservations*100*10)/10;
-    let averageHeatingCoolingUsage = Math.round(totalHeatingCoolingOn/numberOfObservations*100*10)/10;
-    averageOccupancy % 1 === 0 ? averageOccupancy += ".0" : "";
-    averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";
+    /* Gets the values in 1 decimal place format. */
+    let averageOccupancy = Math.round(totalOccupancy/numberOfObservations*10)/10;       // Gets average occupancy in 1 decimal place format
+    let averageLightsUsage = Math.round(totalLightsOn/numberOfObservations*100*10)/10;  // Gets average light usage in 1 decimal place format
+    let averageHeatingCoolingUsage = Math.round(totalHeatingCoolingOn/numberOfObservations*100*10)/10;  // Gets average heater cooler in 1 decimal place format
+    averageOccupancy % 1 === 0 ? averageOccupancy += ".0" : "";                         // Ensures it is in 1 decimal place format
+    averageLightsUsage % 1 === 0 ? averageLightsUsage += ".0" : "";                     // Ensures it is in 1 decimal place format
     
     // Creates the HTML elements using the information stored
     listHTML += `<div class="mdl-cell mdl-cell--4-col">
@@ -59,4 +60,4 @@ for(let address in bucket)
 }
 
 content.innerHTML = listHTML;
-checkIfEmpty();
+checkIfEmpty(roomUsageList); // Checks if there are no observations, if there are none then it will let the user know.
