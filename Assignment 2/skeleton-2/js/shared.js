@@ -361,7 +361,7 @@ function checkIfEmpty(roomUsageList)
         content.innerHTML =  `<div class="mdl-cell mdl-cell--4-col">
                 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
                     <tbody>
-                        <tr><td class="mdl-data-table__cell--non-numeric">There are no observations.</td></tr>
+                        <tr><td class="mdl-data-table__cell--non-numeric">There are no observations to display.</td></tr>
                     </tbody>
                 </table>
             </div>`

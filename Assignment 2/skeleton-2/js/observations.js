@@ -4,8 +4,8 @@ let content = document.getElementById("content");
 let ranOnce = false;    // so that assigning actualIndexes only runs once
 
 createElements(roomUsageList); // Display the observations
+let searchInput = "";
 let searchList = new RoomUsageList();
-searchList.initialiseFromListPDO(roomUsageList);
 
 /*
  *  deleteObservationAtIndex(index)
@@ -21,14 +21,16 @@ function deleteObservationAtIndex(index)
 {   
     let actualIndex;
     
-    if(searchList._numberOfObservations === 0)  // if the searchList is empty then the actualIndex just takes the index from the delete button
+    if(searchInput === "")  // if the searchList is empty then the actualIndex just takes the index from the delete button
     {
         actualIndex = index;
+        checkIfEmpty(roomUsageList);
     }
     else
     {
         actualIndex = searchList._roomList[index]._actualIndex;
         searchList.removeObservationAtIndex(index); // deletes the observation from searchList
+        checkIfEmpty(searchList);
     }
         
     roomUsageList.removeObservationAtIndex(actualIndex);                  // replaces the observation to "deleted" which be deleted when stored
@@ -37,7 +39,6 @@ function deleteObservationAtIndex(index)
     
     // resets the toast if it is active
     cleanUpToast();
-    checkIfEmpty(searchList);
     
     displayMessage("Deleted.", 5000);
 }
@@ -54,6 +55,7 @@ function deleteObservationAtIndex(index)
 */
 function searchFor(input)
 {
+    searchInput = input;
     searchList.clearObservations();
     content.innerHTML = "";
     
@@ -62,7 +64,6 @@ function searchFor(input)
         for(let observation in roomUsageList.list)
         {
             let searchResultIndex = roomUsageList.list[observation].toString().toLowerCase().indexOf(input.trim().toLowerCase());
-
             searchResultIndex !== -1 ? searchList.addObservation(roomUsageList.list[observation]) : "";
         }
         
